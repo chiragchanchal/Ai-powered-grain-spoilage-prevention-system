@@ -81,6 +81,21 @@ class CassandraConnector:
     def get_silo(self, silo_id: str, facility_id: str = "FAC_GURUGRAM_01") -> Optional[Dict[str, Any]]:
         return ts_store.get_silo(silo_id, facility_id)
 
+    def add_silo(self, silo: Dict[str, Any]) -> bool:
+        return ts_store.add_silo(silo)
+
+    def update_silo(self, silo_id: str, data: Dict[str, Any], facility_id: str = "FAC_GURUGRAM_01") -> bool:
+        return ts_store.update_silo(silo_id, data, facility_id)
+
+    def delete_silo(self, silo_id: str, facility_id: str = "FAC_GURUGRAM_01") -> bool:
+        return ts_store.delete_silo(silo_id, facility_id)
+
+    def get_facility(self, facility_id: str = "FAC_GURUGRAM_01") -> Dict[str, Any]:
+        return ts_store.get_facility(facility_id)
+
+    def update_facility(self, data: Dict[str, Any]) -> bool:
+        return ts_store.update_facility(data)
+
     def close(self):
         if self.cluster:
             self.cluster.shutdown()

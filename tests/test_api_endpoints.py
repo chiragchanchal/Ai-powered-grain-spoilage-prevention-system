@@ -76,6 +76,52 @@ class TestAPIEndpoints(unittest.TestCase):
         data = res_trig.json()
         self.assertEqual(data["prediction"]["risk_tier"], "HIGH")
 
+    def test_farmer_customization_lifecycle(self):
+        # 1. Add custom silo
+        new_silo = {
+            "silo_id": "FARMER_BIN_99",
+            "name": "Chirag Kisan Storage Bin 99",
+            "grain_type": "pulses",
+            "capacity_tonnes": 150.0,
+            "current_fill_tonnes": 120.0,
+            "region": "Haryana",
+            "initial_moisture_pct": 11.5,
+            "initial_temp_c": 22.0,
+        }
+        res_add = self.client.post("/api/silos", json=new_silo)
+        self.assertEqual(res_add.status_code, 200)
+        self.assertEqual(res_add.json()["status"], "success")
+
+        # 2. Farmer logs custom reading
+        reading = {
+            "grain_moisture_pct": 14.8,  # elevated for pulses
+            "temp_c": 29.0,
+            "rel_humidity": 70.0,
+            "notes": "Evening hand probe test"
+        }
+        res_read = self.client.post("/api/silos/FARMER_BIN_99/reading", json=reading)
+        self.assertEqual(res_read.status_code, 200)
+        read_data = res_read.json()
+        self.assertIn("prediction", read_data)
+        self.assertIn("playbook", read_data)
+
+        # 3. Update farm facility profile
+        farm_profile = {
+            "name": "Chirag Model Organic Agro Godown",
+            "region": "Haryana",
+            "farmer_name": "Chirag Chanchal",
+            "contact_phone": "+91 99999 88888",
+            "lat": 28.4595,
+            "lon": 77.0266,
+        }
+        res_prof = self.client.put("/api/silos/facility/profile", json=farm_profile)
+        self.assertEqual(res_prof.status_code, 200)
+        self.assertEqual(res_prof.json()["status"], "success")
+
+        # 4. Clean up / Delete silo
+        res_del = self.client.delete("/api/silos/FARMER_BIN_99")
+        self.assertEqual(res_del.status_code, 200)
+
     def test_metrics_summary(self):
         res = self.client.get("/api/metrics/summary")
         self.assertEqual(res.status_code, 200)

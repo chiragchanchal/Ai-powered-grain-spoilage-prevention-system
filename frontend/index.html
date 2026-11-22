@@ -42,9 +42,9 @@
       <!-- Facility & Live Status -->
       <div class="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[#141E33] border border-[#213052] text-xs">
         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-        <span class="text-slate-200 font-medium">Gurugram Mandi Godown A (Haryana)</span>
+        <span id="facilityHeaderBadge" class="text-slate-200 font-medium">Gurugram Mandi Godown A (Haryana)</span>
         <span class="text-slate-500">|</span>
-        <span class="text-slate-400 font-numeric">4 Silos Connected</span>
+        <span id="facilitySiloCountBadge" class="text-slate-400 font-numeric">4 Silos Connected</span>
       </div>
 
       <!-- Action Toolbar -->
@@ -59,6 +59,12 @@
         <!-- Audio Alert Toggle -->
         <button id="btnSoundToggle" class="w-8 h-8 rounded-lg bg-[#141E33] hover:bg-slate-800 border border-[#213052] flex items-center justify-center transition text-xs text-slate-300" title="Audio Alarm Toggle">
           <i class="fas fa-volume-up text-emerald-400"></i>
+        </button>
+
+        <!-- Farm Profile Settings -->
+        <button id="btnOpenProfileModal" class="px-3 py-1.5 rounded-lg bg-[#1D2A48] hover:bg-[#25365C] text-slate-200 text-xs font-semibold border border-[#2D406B] transition flex items-center gap-1.5" title="Customize Farm / Mandi Profile">
+          <i class="fas fa-gear text-slate-300"></i>
+          <span data-i18n="farmProfileBtn">Farm Profile</span>
         </button>
 
         <!-- Stress Testing Button -->
@@ -131,7 +137,7 @@
 
     <!-- SILO FLEET OVERVIEW STRIP -->
     <section class="space-y-4">
-      <div class="flex items-center justify-between">
+      <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <h2 class="text-base font-bold text-white tracking-tight" data-i18n="allSilos">
             Storage Units &amp; Silo Fleet
@@ -142,7 +148,12 @@
             <span id="statCriticalCount" class="text-rose-400 font-bold">1</span> Action Required
           </span>
         </div>
-        <span class="text-xs text-slate-500 font-numeric">Live 6-second sensor polling</span>
+        <div class="flex items-center gap-2">
+          <button id="btnOpenAddSiloModal" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+            <i class="fas fa-plus"></i>
+            <span data-i18n="addSiloBtn">Add Storage Silo</span>
+          </button>
+        </div>
       </div>
 
       <!-- Silo Cards Grid -->
@@ -256,6 +267,264 @@
   <!-- ========================================== -->
   <!-- 3. MODALS (PRODUCT DRAWERS)                -->
   <!-- ========================================== -->
+
+  <!-- ADD CUSTOM SILO MODAL -->
+  <div id="addSiloModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="product-card-elevated max-w-lg w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[#213052] mb-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fas fa-plus text-emerald-400"></i>
+            <span data-i18n="addSiloModalTitle">Register New Storage Silo / Godown</span>
+          </h3>
+          <p class="text-xs text-slate-400">Add custom bin parameters for your farm or cooperative</p>
+        </div>
+        <button id="btnCloseAddSiloModal" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+
+      <form id="addSiloForm" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Unit / Bin Name *</label>
+          <input type="text" name="name" required placeholder="e.g. Backyard Silo 1 - Wheat" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Crop Variety *</label>
+            <select name="grain_type" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white capitalize">
+              <option value="wheat">Wheat (गेहूं)</option>
+              <option value="paddy">Paddy / Rice (धान)</option>
+              <option value="maize">Maize (मक्का)</option>
+              <option value="barley">Barley (जौ)</option>
+              <option value="pulses">Pulses / Dal (दाल/चना)</option>
+              <option value="mustard">Mustard / Sarson (सरसों)</option>
+              <option value="soybean">Soybean (सोयाबीन)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Region / District</label>
+            <input type="text" name="region" value="Haryana" placeholder="e.g. Gurugram, Karnal" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Total Capacity (Tonnes) *</label>
+            <input type="number" step="10" name="capacity_tonnes" value="200" required class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white font-numeric">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Current Stored Quantity (Tonnes) *</label>
+            <input type="number" step="10" name="current_fill_tonnes" value="150" required class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white font-numeric">
+          </div>
+        </div>
+
+        <div class="p-3 bg-[#0B101C] rounded-lg border border-[#1E2B45] space-y-2">
+          <span class="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">Initial Sensor / Moisture Readings</span>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-0.5">Moisture (%)</label>
+              <input type="number" step="0.1" name="initial_moisture_pct" value="12.8" class="w-full bg-[#131B2E] border border-[#213052] rounded px-2 py-1 text-white font-numeric text-xs">
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-0.5">Temp (°C)</label>
+              <input type="number" step="0.5" name="initial_temp_c" value="24.0" class="w-full bg-[#131B2E] border border-[#213052] rounded px-2 py-1 text-white font-numeric text-xs">
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-0.5">Air RH (%)</label>
+              <input type="number" step="1" name="initial_rh" value="58.0" class="w-full bg-[#131B2E] border border-[#213052] rounded px-2 py-1 text-white font-numeric text-xs">
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-[#213052]">
+          <button type="button" onclick="closeAddSiloModal()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-semibold transition shadow-sm">
+            <i class="fas fa-check mr-1.5"></i> Register Storage Unit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LOG FARMER READING MODAL -->
+  <div id="logReadingModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="product-card-elevated max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[#213052] mb-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fas fa-pen-to-square text-sky-400"></i>
+            <span id="logModalSiloTitle">Log Manual Reading</span>
+          </h3>
+          <p class="text-xs text-slate-400">Input your handheld moisture meter or temperature probe reading</p>
+        </div>
+        <button id="btnCloseLogReadingModal" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+
+      <form id="logReadingForm" class="space-y-4 text-xs">
+        <input type="hidden" name="silo_id" id="logModalSiloId">
+
+        <div class="p-3 bg-[#0B101C] rounded-lg border border-[#1E2B45] text-xs">
+          <div class="text-[11px] text-slate-400">Unit ID: <span id="logModalSiloBadge" class="font-numeric font-bold text-white">SILO_01</span> · Crop: <span id="logModalCropBadge" class="text-amber-400 font-bold capitalize">wheat</span></div>
+          <div class="text-[11px] text-slate-400 mt-1">Critical Moisture Limit: <span id="logModalSafeLimit" class="font-numeric text-rose-400 font-bold">14.0%</span></div>
+        </div>
+
+        <div>
+          <label class="block text-slate-200 font-medium mb-1">
+            Grain Moisture Content (%) * 
+            <span class="text-[10px] text-slate-400">(from digital moisture meter)</span>
+          </label>
+          <input type="number" step="0.1" name="grain_moisture_pct" id="logInputMoisture" required class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white font-numeric text-sm">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-200 font-medium mb-1">Stack Temp (°C) *</label>
+            <input type="number" step="0.1" name="temp_c" id="logInputTemp" required class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white font-numeric text-sm">
+          </div>
+          <div>
+            <label class="block text-slate-200 font-medium mb-1">Interstitial RH (%)</label>
+            <input type="number" step="0.5" name="rel_humidity" id="logInputRH" value="60.0" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white font-numeric text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Observation Notes (Optional)</label>
+          <input type="text" name="notes" placeholder="e.g. Center stack probe, midday sunshine test" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-1.5 text-white">
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-[#213052]">
+          <button type="button" onclick="closeLogReadingModal()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-sky-700 hover:bg-sky-600 text-white font-semibold transition shadow-sm">
+            <i class="fas fa-calculator mr-1.5"></i> Save &amp; Re-Evaluate AI Risk
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT SILO MODAL -->
+  <div id="editSiloModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="product-card-elevated max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[#213052] mb-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fas fa-gear text-amber-400"></i>
+            <span>Edit Storage Unit Parameters</span>
+          </h3>
+          <p class="text-xs text-slate-400">Update capacity, fill level, or crop variety</p>
+        </div>
+        <button id="btnCloseEditSiloModal" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+
+      <form id="editSiloForm" class="space-y-3.5 text-xs">
+        <input type="hidden" name="silo_id" id="editModalSiloId">
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Unit Name</label>
+          <input type="text" name="name" id="editModalName" required class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white">
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Crop Variety</label>
+          <select name="grain_type" id="editModalCrop" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white capitalize">
+            <option value="wheat">Wheat (गेहूं)</option>
+            <option value="paddy">Paddy / Rice (धान)</option>
+            <option value="maize">Maize (मक्का)</option>
+            <option value="barley">Barley (जौ)</option>
+            <option value="pulses">Pulses / Dal (दाल/चना)</option>
+            <option value="mustard">Mustard / Sarson (सरसों)</option>
+            <option value="soybean">Soybean (सोयाबीन)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Capacity (Tonnes)</label>
+            <input type="number" step="10" name="capacity_tonnes" id="editModalCapacity" required class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white font-numeric">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Stored (Tonnes)</label>
+            <input type="number" step="10" name="current_fill_tonnes" id="editModalFill" required class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white font-numeric">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-[#213052]">
+          <button type="button" onclick="closeEditSiloModal()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-semibold transition shadow-sm">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- FARM / FACILITY PROFILE MODAL -->
+  <div id="farmProfileModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="product-card-elevated max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[#213052] mb-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fas fa-location-dot text-rose-400"></i>
+            <span>Farm &amp; Mandi Storage Profile</span>
+          </h3>
+          <p class="text-xs text-slate-400">Customize facility name, district, and weather coordinates</p>
+        </div>
+        <button id="btnCloseProfileModal" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+
+      <form id="farmProfileForm" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">Farm / Facility Name *</label>
+          <input type="text" name="name" id="profileInputName" required placeholder="e.g. Ramesh Kumar Kisan Godown" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Farmer / In-Charge Name</label>
+            <input type="text" name="farmer_name" id="profileInputFarmer" placeholder="e.g. Ramesh Sharma" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white">
+          </div>
+          <div>
+            <label class="block text-slate-300 font-medium mb-1">Contact Phone</label>
+            <input type="text" name="contact_phone" id="profileInputPhone" placeholder="+91 98765 43210" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-medium mb-1">District / Agro-Climatic Zone</label>
+          <input type="text" name="region" id="profileInputRegion" value="Haryana" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-3 py-2 text-white">
+        </div>
+
+        <div class="p-3 bg-[#0B101C] rounded-lg border border-[#1E2B45] text-xs">
+          <div class="text-[11px] font-bold text-slate-300 mb-1">Weather Coordinates (OpenWeatherMap Sync)</div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-0.5">Latitude</label>
+              <input type="number" step="0.001" name="lat" id="profileInputLat" value="28.4595" class="w-full bg-[#131B2E] border border-[#213052] rounded px-2 py-1 text-white font-numeric text-xs">
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-0.5">Longitude</label>
+              <input type="number" step="0.001" name="lon" id="profileInputLon" value="77.0266" class="w-full bg-[#131B2E] border border-[#213052] rounded px-2 py-1 text-white font-numeric text-xs">
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-[#213052]">
+          <button type="button" onclick="closeProfileModal()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-semibold transition shadow-sm">
+            Save Farm Settings
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- STRESS SCENARIOS MODAL -->
   <div id="simModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">

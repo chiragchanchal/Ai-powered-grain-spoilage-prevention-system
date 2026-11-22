@@ -65,6 +65,19 @@ class LocalTimeSeriesStore:
             )
             """)
 
+            # Facility profile table for custom farm/godown settings
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS facility_profile (
+                facility_id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                region TEXT NOT NULL,
+                lat REAL NOT NULL,
+                lon REAL NOT NULL,
+                farmer_name TEXT,
+                contact_phone TEXT
+            )
+            """)
+
             # Index matching Cassandra clustering and queries
             cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_telemetry_query 
@@ -212,6 +225,103 @@ class LocalTimeSeriesStore:
             """, (facility_id, silo_id))
             row = cursor.fetchone()
             return dict(row) if row else None
+
+    def add_silo(self, silo: Dict[str, Any]) -> bool:
+        """Allows farmers/operators to add their own custom storage unit."""
+        facility_id = silo.get("facility_id", "FAC_GURUGRAM_01")
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            INSERT OR REPLACE INTO silos 
+            (facility_id, silo_id, name, grain_type, capacity_tonnes, current_fill_tonnes, installed_sensors, region, lat, lon)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                facility_id,
+                silo["silo_id"],
+                silo["name"],
+                silo.get("grain_type", "wheat").lower(),
+                float(silo.get("capacity_tonnes", 100.0)),
+                float(silo.get("current_fill_tonnes", 50.0)),
+                silo.get("installed_sensors", "Farmer Manual Moisture Meter, Temp Probe"),
+                silo.get("region", "Haryana"),
+                float(silo.get("lat", 28.4595)),
+                float(silo.get("lon", 77.0266)),
+            ))
+            conn.commit()
+            return True
+
+    def update_silo(self, silo_id: str, data: Dict[str, Any], facility_id: str = "FAC_GURUGRAM_01") -> bool:
+        """Updates crop, capacity, quantity, or name for an existing unit."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            UPDATE silos SET
+                name = COALESCE(?, name),
+                grain_type = COALESCE(?, grain_type),
+                capacity_tonnes = COALESCE(?, capacity_tonnes),
+                current_fill_tonnes = COALESCE(?, current_fill_tonnes),
+                region = COALESCE(?, region)
+            WHERE facility_id = ? AND silo_id = ?
+            """, (
+                data.get("name"),
+                data.get("grain_type", "").lower() if data.get("grain_type") else None,
+                data.get("capacity_tonnes"),
+                data.get("current_fill_tonnes"),
+                data.get("region"),
+                facility_id,
+                silo_id,
+            ))
+            conn.commit()
+            return True
+
+    def delete_silo(self, silo_id: str, facility_id: str = "FAC_GURUGRAM_01") -> bool:
+        """Deletes a silo and its telemetry records."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM silos WHERE facility_id = ? AND silo_id = ?", (facility_id, silo_id))
+            cursor.execute("DELETE FROM silo_telemetry WHERE facility_id = ? AND silo_id = ?", (facility_id, silo_id))
+            conn.commit()
+            return True
+
+    def get_facility(self, facility_id: str = "FAC_GURUGRAM_01") -> Dict[str, Any]:
+        """Retrieves custom farm/facility metadata."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM facility_profile WHERE facility_id = ?", (facility_id,))
+            row = cursor.fetchone()
+            if row:
+                return dict(row)
+            # Default profile
+            return {
+                "facility_id": facility_id,
+                "name": "Gurugram Central Agro-Mandi Godown",
+                "region": "Haryana",
+                "lat": 28.4595,
+                "lon": 77.0266,
+                "farmer_name": "Authorized Mandi Supervisor",
+                "contact_phone": "+91 98765 43210"
+            }
+
+    def update_facility(self, data: Dict[str, Any]) -> bool:
+        """Updates custom farm or storage facility profile."""
+        facility_id = data.get("facility_id", "FAC_GURUGRAM_01")
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            INSERT OR REPLACE INTO facility_profile 
+            (facility_id, name, region, lat, lon, farmer_name, contact_phone)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                facility_id,
+                data.get("name", "My Farm Grain Storage"),
+                data.get("region", "Haryana"),
+                float(data.get("lat", 28.4595)),
+                float(data.get("lon", 77.0266)),
+                data.get("farmer_name", "Farmer In-Charge"),
+                data.get("contact_phone", "")
+            ))
+            conn.commit()
+            return True
 
 
 ts_store = LocalTimeSeriesStore()

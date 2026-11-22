@@ -30,6 +30,12 @@ const translations = {
     printReportBtn: "Print Inspection Sheet",
     resetBtn: "Reset to Baseline",
     closeBtn: "Close",
+    addSiloBtn: "Add Storage Silo",
+    farmProfileBtn: "Farm Profile",
+    addSiloModalTitle: "Register New Storage Silo / Godown",
+    logReadingBtn: "Log Reading",
+    editSiloBtn: "Edit",
+    deleteSiloBtn: "Delete",
   },
   hi: {
     productName: "एग्रोगार्ड (AgroGuard)",
@@ -57,6 +63,12 @@ const translations = {
     printReportBtn: "निरीक्षण रिपोर्ट प्रिंट करें",
     resetBtn: "रीसेट करें",
     closeBtn: "बंद करें",
+    addSiloBtn: "नया साइलो जोड़ें",
+    farmProfileBtn: "फार्म प्रोफाइल",
+    addSiloModalTitle: "नया अनाज साइलो / गोदाम दर्ज करें",
+    logReadingBtn: "रीडिंग दर्ज करें",
+    editSiloBtn: "संपादित करें",
+    deleteSiloBtn: "हटाएं",
   }
 };
 

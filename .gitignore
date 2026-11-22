@@ -31,5 +31,7 @@ Thumbs.db
 .coverage
 htmlcov/
 
-# Logs
+# Logs and generated PDFs
 *.log
+*.pdf
+

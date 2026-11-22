@@ -11,14 +11,17 @@ Implements standard FAO, ASABE, and Magnus-Tetens formulas for:
 import math
 from typing import Dict, Any, Tuple
 
-# Modified Oswin equation parameters for cereal grains:
+# Modified Oswin equation parameters for cereal grains and major crops:
 # EMC (%) = (A + B * T) * (RH / (1 - RH))^C
-# Reference: ASABE D245.7 / FAO Grain Conditioning Standards
+# Reference: ASABE D245.7 / FAO Grain Conditioning Standards / ICAR Storage Specs
 GRAIN_CONSTANTS = {
     "wheat": {"A": 12.0, "B": -0.05, "C": 0.38, "safe_mc": 13.5, "critical_mc": 14.5},
     "paddy": {"A": 11.2, "B": -0.04, "C": 0.37, "safe_mc": 13.0, "critical_mc": 14.0},
     "maize": {"A": 11.8, "B": -0.05, "C": 0.39, "safe_mc": 13.5, "critical_mc": 14.5},
     "barley": {"A": 11.5, "B": -0.05, "C": 0.38, "safe_mc": 13.0, "critical_mc": 14.0},
+    "pulses": {"A": 10.8, "B": -0.04, "C": 0.36, "safe_mc": 12.0, "critical_mc": 13.0},
+    "mustard": {"A": 8.5, "B": -0.03, "C": 0.34, "safe_mc": 9.0, "critical_mc": 10.0},
+    "soybean": {"A": 10.2, "B": -0.04, "C": 0.35, "safe_mc": 11.5, "critical_mc": 12.5},
 }
 
 

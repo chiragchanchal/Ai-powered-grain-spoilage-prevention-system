@@ -1,7 +1,10 @@
 /**
- * AgroGuard Product Controller
- * Real-time telemetry, decision banners, threshold checks, Chart.js trends,
- * What-If simulations, and compliance report generator.
+ * AgroGuard Product Controller with Farmer Customization
+ * Allows farmers and operators to:
+ * - Register custom storage units & bins
+ * - Log manual moisture meter & temperature probe readings
+ * - Customize farm & facility profiles
+ * - Receive instant AI risk classification & ventilation guidance
  */
 
 let state = {
@@ -56,7 +59,14 @@ function setupEventListeners() {
       : '<i class="fas fa-volume-up text-emerald-400"></i>';
   });
 
-  // Modals
+  // Modal open/close controls
+  document.getElementById("btnOpenAddSiloModal")?.addEventListener("click", openAddSiloModal);
+  document.getElementById("btnCloseAddSiloModal")?.addEventListener("click", closeAddSiloModal);
+  document.getElementById("btnCloseLogReadingModal")?.addEventListener("click", closeLogReadingModal);
+  document.getElementById("btnCloseEditSiloModal")?.addEventListener("click", closeEditSiloModal);
+  document.getElementById("btnOpenProfileModal")?.addEventListener("click", openProfileModal);
+  document.getElementById("btnCloseProfileModal")?.addEventListener("click", closeProfileModal);
+
   document.getElementById("btnOpenSimModal")?.addEventListener("click", openSimModal);
   document.getElementById("btnCloseSimModal")?.addEventListener("click", closeSimModal);
   document.getElementById("btnOpenMetricsModal")?.addEventListener("click", openMetricsModal);
@@ -64,6 +74,12 @@ function setupEventListeners() {
   document.getElementById("btnOpenReportModal")?.addEventListener("click", openReportModal);
   document.getElementById("btnCloseReportModal")?.addEventListener("click", closeReportModal);
   document.getElementById("btnPrintReport")?.addEventListener("click", () => window.print());
+
+  // Farmer Form Submissions
+  document.getElementById("addSiloForm")?.addEventListener("submit", handleAddSiloSubmit);
+  document.getElementById("logReadingForm")?.addEventListener("submit", handleLogReadingSubmit);
+  document.getElementById("editSiloForm")?.addEventListener("submit", handleEditSiloSubmit);
+  document.getElementById("farmProfileForm")?.addEventListener("submit", handleFarmProfileSubmit);
 
   // Scenario Triggers
   document.querySelectorAll("[data-scenario]").forEach(btn => {
@@ -132,6 +148,16 @@ function renderSummaryStats(data) {
   document.getElementById("statSafeCount").innerText = data.low_risk_count || 0;
   document.getElementById("statWarningCount").innerText = data.medium_risk_count || 0;
   document.getElementById("statCriticalCount").innerText = data.high_risk_count || 0;
+
+  // Update header badges
+  const headerBadge = document.getElementById("facilityHeaderBadge");
+  if (headerBadge && data.facility_name) {
+    headerBadge.innerText = `${data.facility_name} (${data.region || 'Haryana'})`;
+  }
+  const countBadge = document.getElementById("facilitySiloCountBadge");
+  if (countBadge) {
+    countBadge.innerText = `${data.total_silos || 0} Silos Connected`;
+  }
 }
 
 function renderWeather(weather) {
@@ -202,7 +228,7 @@ function renderSiloCards() {
     }
 
     const commandText = isHindi ? risk.primary_command_hi : risk.primary_command;
-    const safeMoistureLimit = silo.grain_type === "paddy" ? 13.0 : 14.0;
+    const safeMoistureLimit = silo.safe_moisture_limit || (silo.grain_type === "paddy" ? 13.0 : 14.0);
 
     return `
       <div class="product-card p-5 ${borderClass} flex flex-col justify-between">
@@ -223,8 +249,14 @@ function renderSiloCards() {
             </div>
           </div>
 
-          <div>
+          <div class="flex items-center gap-2">
             ${statusBadge}
+            <button onclick="openEditSiloModal('${silo.silo_id}', '${silo.name}', '${silo.grain_type}', ${silo.capacity_tonnes}, ${silo.current_fill_tonnes})" class="text-slate-400 hover:text-white p-1 text-xs" title="Edit Unit Parameters">
+              <i class="fas fa-pencil"></i>
+            </button>
+            <button onclick="deleteSilo('${silo.silo_id}', '${silo.name}')" class="text-slate-400 hover:text-rose-400 p-1 text-xs" title="Delete Storage Unit">
+              <i class="fas fa-trash"></i>
+            </button>
           </div>
         </div>
 
@@ -234,7 +266,7 @@ function renderSiloCards() {
             ${Visualizers.createSiloCrossSectionSVG(silo.fill_percentage, silo.grain_type, risk.risk_tier)}
           </div>
           <div class="col-span-3 grid grid-cols-3 gap-2">
-            ${Visualizers.createMetricMeter(isHindi ? "नमी (MC)" : "Moisture", telem.grain_moisture_pct, "%", safeMoistureLimit, 8, 20)}
+            ${Visualizers.createMetricMeter(isHindi ? "नमी (MC)" : "Moisture", telem.grain_moisture_pct, "%", safeMoistureLimit, 8, 22)}
             ${Visualizers.createMetricMeter(isHindi ? "तापमान" : "Stack Temp", telem.temp_c, "°C", 26.0, 10, 48)}
             ${Visualizers.createMetricMeter(isHindi ? "आर्द्रता" : "Air RH", telem.rel_humidity, "%", 65.0, 20, 100)}
           </div>
@@ -274,11 +306,13 @@ function renderSiloCards() {
           <p class="text-[11px] text-slate-400 leading-relaxed">${risk.window_to_act} · ${risk.aeration_reason}</p>
         </div>
 
-        <!-- Footer: Inspection Trigger -->
+        <!-- Footer: Inspection Trigger & Farmer Quick Reading Log -->
         <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-[#1E2B45] text-xs">
-          <span class="text-[11px] text-slate-400 font-numeric">
-            P(spoilage risk): ${(risk.p_risk * 100).toFixed(1)}%
-          </span>
+          <button onclick="openLogReadingModal('${silo.silo_id}', '${silo.name}', '${silo.grain_type}', ${safeMoistureLimit}, ${telem.grain_moisture_pct}, ${telem.temp_c}, ${telem.rel_humidity})" class="px-2.5 py-1 rounded bg-sky-950/80 hover:bg-sky-900 text-sky-200 text-xs font-semibold border border-sky-800/80 transition flex items-center gap-1.5">
+            <i class="fas fa-pen-to-square"></i>
+            <span>${isHindi ? "रीडिंग दर्ज करें" : "Log Reading"}</span>
+          </button>
+          
           <button onclick="loadHistoricalChart('${silo.silo_id}')" class="px-2.5 py-1 rounded bg-[#162034] hover:bg-[#213052] text-slate-200 text-xs font-semibold border border-[#213052] transition">
             <i class="fas fa-chart-line mr-1 text-sky-400"></i>${isHindi ? "ग्राफ देखें" : "View Trends"}
           </button>
@@ -288,6 +322,220 @@ function renderSiloCards() {
     `;
   }).join("");
 }
+
+/* ======================================================== */
+/* FARMER CUSTOMIZATION MODALS HANDLERS                     */
+/* ======================================================== */
+
+function openAddSiloModal() {
+  document.getElementById("addSiloModal")?.classList.remove("hidden");
+}
+
+function closeAddSiloModal() {
+  document.getElementById("addSiloModal")?.classList.add("hidden");
+}
+
+async function handleAddSiloSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const payload = {
+    name: form.name.value,
+    grain_type: form.grain_type.value,
+    capacity_tonnes: parseFloat(form.capacity_tonnes.value),
+    current_fill_tonnes: parseFloat(form.current_fill_tonnes.value),
+    region: form.region.value,
+    initial_moisture_pct: parseFloat(form.initial_moisture_pct.value),
+    initial_temp_c: parseFloat(form.initial_temp_c.value),
+    initial_rh: parseFloat(form.initial_rh.value),
+  };
+
+  try {
+    const res = await fetch("/api/silos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message || "Storage unit registered successfully.");
+      closeAddSiloModal();
+      form.reset();
+      await fetchSilosData();
+    } else {
+      alert(data.detail || "Failed to register silo.");
+    }
+  } catch (err) {
+    console.error("Add silo failed:", err);
+  }
+}
+
+function openLogReadingModal(siloId, name, crop, safeLimit, currentMC, currentTemp, currentRH) {
+  document.getElementById("logModalSiloId").value = siloId;
+  document.getElementById("logModalSiloTitle").innerText = `Log Reading · ${name}`;
+  document.getElementById("logModalSiloBadge").innerText = siloId;
+  document.getElementById("logModalCropBadge").innerText = crop;
+  document.getElementById("logModalSafeLimit").innerText = `${safeLimit.toFixed(1)}%`;
+
+  document.getElementById("logInputMoisture").value = currentMC.toFixed(1);
+  document.getElementById("logInputTemp").value = currentTemp.toFixed(1);
+  document.getElementById("logInputRH").value = currentRH.toFixed(1);
+
+  document.getElementById("logReadingModal")?.classList.remove("hidden");
+}
+
+function closeLogReadingModal() {
+  document.getElementById("logReadingModal")?.classList.add("hidden");
+}
+
+async function handleLogReadingSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const siloId = form.silo_id.value;
+  const payload = {
+    grain_moisture_pct: parseFloat(form.grain_moisture_pct.value),
+    temp_c: parseFloat(form.temp_c.value),
+    rel_humidity: parseFloat(form.rel_humidity.value),
+    notes: form.notes.value,
+  };
+
+  try {
+    const res = await fetch(`/api/silos/${siloId}/reading`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(`Reading saved! Risk: ${data.prediction.risk_tier}`);
+      closeLogReadingModal();
+      await fetchSilosData();
+      await loadHistoricalChart(siloId);
+    } else {
+      alert(data.detail || "Failed to save reading.");
+    }
+  } catch (err) {
+    console.error("Log reading failed:", err);
+  }
+}
+
+function openEditSiloModal(siloId, name, crop, capacity, fill) {
+  document.getElementById("editModalSiloId").value = siloId;
+  document.getElementById("editModalName").value = name;
+  document.getElementById("editModalCrop").value = crop.toLowerCase();
+  document.getElementById("editModalCapacity").value = capacity;
+  document.getElementById("editModalFill").value = fill;
+
+  document.getElementById("editSiloModal")?.classList.remove("hidden");
+}
+
+function closeEditSiloModal() {
+  document.getElementById("editSiloModal")?.classList.add("hidden");
+}
+
+async function handleEditSiloSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const siloId = form.silo_id.value;
+  const payload = {
+    name: form.name.value,
+    grain_type: form.grain_type.value,
+    capacity_tonnes: parseFloat(form.capacity_tonnes.value),
+    current_fill_tonnes: parseFloat(form.current_fill_tonnes.value),
+  };
+
+  try {
+    const res = await fetch(`/api/silos/${siloId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message || "Storage unit updated.");
+      closeEditSiloModal();
+      await fetchSilosData();
+    } else {
+      alert(data.detail || "Failed to update silo.");
+    }
+  } catch (err) {
+    console.error("Edit silo failed:", err);
+  }
+}
+
+async function deleteSilo(siloId, name) {
+  const isHindi = currentLang === "hi";
+  const confirmMsg = isHindi
+    ? `क्या आप वाकई साइलो "${name}" को हटाना चाहते हैं?`
+    : `Are you sure you want to delete storage unit "${name}" (${siloId})?`;
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    const res = await fetch(`/api/silos/${siloId}`, { method: "DELETE" });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(`Silo ${siloId} deleted.`);
+      await fetchSilosData();
+    }
+  } catch (err) {
+    console.error("Delete failed:", err);
+  }
+}
+
+async function openProfileModal() {
+  try {
+    const res = await fetch("/api/silos/facility/profile");
+    const data = await res.json();
+    document.getElementById("profileInputName").value = data.name || "Gurugram Central Agro-Mandi Godown";
+    document.getElementById("profileInputFarmer").value = data.farmer_name || "Farmer In-Charge";
+    document.getElementById("profileInputPhone").value = data.contact_phone || "+91 98765 43210";
+    document.getElementById("profileInputRegion").value = data.region || "Haryana";
+    document.getElementById("profileInputLat").value = data.lat || 28.4595;
+    document.getElementById("profileInputLon").value = data.lon || 77.0266;
+  } catch (e) {
+    console.error("Profile fetch error:", e);
+  }
+  document.getElementById("farmProfileModal")?.classList.remove("hidden");
+}
+
+function closeProfileModal() {
+  document.getElementById("farmProfileModal")?.classList.add("hidden");
+}
+
+async function handleFarmProfileSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const payload = {
+    name: form.name.value,
+    farmer_name: form.farmer_name.value,
+    contact_phone: form.contact_phone.value,
+    region: form.region.value,
+    lat: parseFloat(form.lat.value),
+    lon: parseFloat(form.lon.value),
+  };
+
+  try {
+    const res = await fetch("/api/silos/facility/profile", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast("Farm profile updated!");
+      closeProfileModal();
+      await fetchWeatherData();
+      await fetchSilosData();
+    } else {
+      alert(data.detail || "Failed to update profile.");
+    }
+  } catch (err) {
+    console.error("Profile update failed:", err);
+  }
+}
+
+/* ======================================================== */
+/* HISTORICAL TRENDS, DIAGNOSTICS & SIMULATIONS             */
+/* ======================================================== */
 
 async function loadHistoricalChart(siloId) {
   state.activeSiloId = siloId;
@@ -531,14 +779,14 @@ function openReportModal() {
   document.getElementById("reportModal")?.classList.remove("hidden");
   const now = new Date();
   document.getElementById("reportDate").innerText = now.toLocaleString();
-  document.getElementById("reportFacility").innerText = "Gurugram Central Agro-Mandi (Haryana)";
+  document.getElementById("reportFacility").innerText = state.facilityData?.facility_name || "Gurugram Central Agro-Mandi (Haryana)";
 
   const body = document.getElementById("reportTableBody");
   if (body && state.facilityData && state.facilityData.silos) {
     body.innerHTML = state.facilityData.silos.map(s => `
       <tr class="border-b border-slate-200 text-xs">
         <td class="py-2 font-bold">${s.silo_id} - ${s.name}</td>
-        <td class="py-2 uppercase">${s.grain_type}</td>
+        <td class="py-2 uppercase font-semibold text-slate-800">${s.grain_type}</td>
         <td class="py-2 font-numeric">${s.telemetry.temp_c}°C</td>
         <td class="py-2 font-numeric">${s.telemetry.rel_humidity}%</td>
         <td class="py-2 font-numeric font-bold">${s.telemetry.grain_moisture_pct}%</td>
