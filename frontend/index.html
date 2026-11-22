@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroGuard — Grain Storage Intelligence Platform</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Product Stylesheet -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="bg-[#090D16] text-slate-100 antialiased">
+
+  <!-- ========================================== -->
+  <!-- 1. PRODUCT NAVIGATION BAR                  -->
+  <!-- ========================================== -->
+  <header class="border-b border-[#1E2B45] bg-[#0E1524] px-6 py-3.5 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Product Branding -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-9 h-9 rounded-lg bg-emerald-600/90 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          <i class="fas fa-wheat-awn"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-base font-bold text-white tracking-tight" data-i18n="productName">AgroGuard</span>
+            <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-numeric border border-slate-700">v2.0 · CS002</span>
+          </div>
+          <p class="text-xs text-slate-400 font-medium" data-i18n="productTagline">
+            Grain Storage Intelligence &amp; Spoilage Prevention
+          </p>
+        </div>
+      </div>
+
+      <!-- Facility & Live Status -->
+      <div class="hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[#141E33] border border-[#213052] text-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span class="text-slate-200 font-medium">Gurugram Mandi Godown A (Haryana)</span>
+        <span class="text-slate-500">|</span>
+        <span class="text-slate-400 font-numeric">4 Silos Connected</span>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="flex items-center gap-2.5">
+        
+        <!-- Language Switcher -->
+        <div class="flex items-center bg-[#141E33] rounded-lg p-0.5 border border-[#213052] text-xs">
+          <button id="btnLangEn" class="px-2.5 py-1 rounded bg-emerald-700 text-white font-medium transition">EN</button>
+          <button id="btnLangHi" class="px-2.5 py-1 rounded text-slate-400 hover:text-white font-medium transition">हिन्दी</button>
+        </div>
+
+        <!-- Audio Alert Toggle -->
+        <button id="btnSoundToggle" class="w-8 h-8 rounded-lg bg-[#141E33] hover:bg-slate-800 border border-[#213052] flex items-center justify-center transition text-xs text-slate-300" title="Audio Alarm Toggle">
+          <i class="fas fa-volume-up text-emerald-400"></i>
+        </button>
+
+        <!-- Stress Testing Button -->
+        <button id="btnOpenSimModal" class="px-3 py-1.5 rounded-lg bg-[#1D2A48] hover:bg-[#25365C] text-slate-200 text-xs font-semibold border border-[#2D406B] transition flex items-center gap-1.5">
+          <i class="fas fa-flask text-amber-400"></i>
+          <span>Simulate Scenarios</span>
+        </button>
+
+        <!-- Benchmarks & SDGs -->
+        <button id="btnOpenMetricsModal" class="px-3 py-1.5 rounded-lg bg-[#1D2A48] hover:bg-[#25365C] text-slate-200 text-xs font-semibold border border-[#2D406B] transition flex items-center gap-1.5">
+          <i class="fas fa-chart-pie text-cyan-400"></i>
+          <span>Benchmarks &amp; SDGs</span>
+        </button>
+
+        <!-- Inspection Report -->
+        <button id="btnOpenReportModal" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+          <i class="fas fa-file-lines"></i>
+          <span>Inspection Sheet</span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- 2. MAIN CONTENT                            -->
+  <!-- ========================================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- HERO PRODUCT DECISION BANNER (The #1 Question: Can we ventilate today?) -->
+    <section id="heroDecisionBanner" class="product-card p-5 border-l-4 border-l-emerald-500 bg-[#101726]">
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
+        
+        <!-- Left: Ventilation Command -->
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider" data-i18n="aerationAdvisorTitle">
+              Ventilation &amp; Aeration Advisor
+            </span>
+            <span id="aerationStatusBadge" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800">
+              Safe to Aerate
+            </span>
+          </div>
+          <h2 id="aerationMainHeadline" class="text-base sm:text-lg font-bold text-white leading-snug">
+            Safe to Run Intake Aeration Fans Tonight
+          </h2>
+          <p id="aerationSubtext" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Outside ambient air is drier (52% RH) than internal storage grain mass (58% RH). Running aeration will cool the core stack and purge moisture safely.
+          </p>
+        </div>
+
+        <!-- Right: Current Weather & 48h Outlook -->
+        <div class="flex items-center gap-4 bg-[#0B101C] p-3 rounded-xl border border-[#1E2B45] text-xs">
+          <div class="w-10 h-10 rounded-lg bg-sky-950/60 border border-sky-800/60 flex items-center justify-center text-sky-400 text-xl">
+            <i class="fas fa-cloud-sun"></i>
+          </div>
+          <div>
+            <div class="text-[11px] text-slate-400">Ambient Weather · Gurugram</div>
+            <div class="flex items-baseline gap-2 mt-0.5">
+              <span id="weatherTemp" class="text-lg font-bold font-numeric text-white">28.0°C</span>
+              <span id="weatherRH" class="font-numeric text-sky-400">65% RH</span>
+              <span id="weatherPop" class="font-numeric text-slate-400">10% Rain</span>
+            </div>
+            <div id="weatherCondition" class="text-[11px] text-slate-400">Clear Skies · Stable Air Window</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SILO FLEET OVERVIEW STRIP -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <h2 class="text-base font-bold text-white tracking-tight" data-i18n="allSilos">
+            Storage Units &amp; Silo Fleet
+          </h2>
+          <span class="text-xs text-slate-400 font-numeric">
+            <span id="statSafeCount" class="text-emerald-400 font-bold">3</span> Normal · 
+            <span id="statWarningCount" class="text-amber-400 font-bold">0</span> Advisory · 
+            <span id="statCriticalCount" class="text-rose-400 font-bold">1</span> Action Required
+          </span>
+        </div>
+        <span class="text-xs text-slate-500 font-numeric">Live 6-second sensor polling</span>
+      </div>
+
+      <!-- Silo Cards Grid -->
+      <div id="siloGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </section>
+
+    <!-- DEEP DIVE ANALYTICS & DIAGNOSTICS (Two Clear Product Sections) -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Section A: 24-Hour Telemetry Trends -->
+      <div class="product-card p-5 flex flex-col justify-between">
+        <div class="flex items-center justify-between pb-3 border-b border-[#1E2B45] mb-4">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fas fa-chart-line text-sky-400"></i>
+              <span id="chartActiveSiloName">Silo 1 · 24-Hour Microclimate Drift</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Monitors rate of temperature rise (hotspot detection) and interstitial moisture</p>
+          </div>
+          <span class="text-[11px] px-2 py-0.5 rounded bg-[#162034] text-slate-300 font-numeric border border-[#213052]">Rolling Telemetry</span>
+        </div>
+        <div class="h-64 w-full">
+          <canvas id="telemetryChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Section B: Regional Climate Knowledge Graph -->
+      <div class="product-card p-5 flex flex-col justify-between">
+        <div class="flex items-center justify-between pb-3 border-b border-[#1E2B45] mb-3">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fas fa-project-diagram text-emerald-400"></i>
+              <span>Climate Knowledge Graph (Neo4j / NetworkX)</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Models relationships between regional weather anomalies and grain pathogens</p>
+          </div>
+          <div class="flex items-center gap-2 text-[10px] font-numeric text-slate-400">
+            <span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span> Region
+            <span class="inline-block w-2 h-2 rounded-full bg-amber-500"></span> Climate
+            <span class="inline-block w-2 h-2 rounded-full bg-rose-500"></span> Pathogen
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span> Grain
+          </div>
+        </div>
+
+        <div class="relative w-full h-52 bg-[#0A0E18] rounded-lg border border-[#1E2B45] overflow-hidden">
+          <canvas id="kgCanvas" width="600" height="208" class="w-full h-full cursor-pointer"></canvas>
+        </div>
+
+        <div id="kgNodeDetail" class="mt-2 min-h-[36px]">
+          <span class="text-xs text-slate-500 italic">Click any entity node above to inspect ASABE safe thresholds and disease triggers.</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- WHAT-IF SPOILAGE RISK CALCULATOR (Interactive Tool) -->
+    <section class="product-card p-5">
+      <div class="flex items-center justify-between pb-3 border-b border-[#1E2B45] mb-4">
+        <div>
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fas fa-sliders text-indigo-400"></i>
+            <span>Interactive What-If Spoilage Calculator</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Evaluate how shifting temperature, humidity, or moisture affects risk using the trained ensemble model
+          </p>
+        </div>
+      </div>
+
+      <form id="whatIfForm" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1">Crop Variety</label>
+          <select name="grain_type" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-2.5 py-1.5 text-xs text-white">
+            <option value="wheat">Wheat (HD-2967)</option>
+            <option value="paddy">Paddy (PB-1121)</option>
+            <option value="maize">Maize (Hybrid)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1">Grain Temp (°C)</label>
+          <input type="number" step="0.5" name="temp_c" value="28.5" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-2.5 py-1.5 text-xs text-white font-numeric">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1">Internal RH (%)</label>
+          <input type="number" step="0.5" name="rh" value="68.0" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-2.5 py-1.5 text-xs text-white font-numeric">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1">Grain Moisture (%)</label>
+          <input type="number" step="0.1" name="mc" value="14.2" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-2.5 py-1.5 text-xs text-white font-numeric">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 font-medium mb-1">Drift Rate (°C/h)</label>
+          <input type="number" step="0.05" name="dt_dt" value="0.25" class="w-full bg-[#131B2E] border border-[#213052] rounded-lg px-2.5 py-1.5 text-xs text-white font-numeric">
+        </div>
+        <div>
+          <button type="submit" class="w-full bg-indigo-700 hover:bg-indigo-600 text-white font-semibold py-1.5 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+            <i class="fas fa-play"></i> Evaluate Risk
+          </button>
+        </div>
+      </form>
+
+      <div id="whatIfResult" class="mt-4 hidden">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- 3. MODALS (PRODUCT DRAWERS)                -->
+  <!-- ========================================== -->
+
+  <!-- STRESS SCENARIOS MODAL -->
+  <div id="simModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="product-card-elevated max-w-xl w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-[#213052] mb-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fas fa-flask text-amber-400"></i>
+            <span>Real-World Stress-Test Scenarios</span>
+          </h3>
+          <p class="text-xs text-slate-400">Simulate adverse microclimate conditions to observe early warnings</p>
+        </div>
+        <button id="btnCloseSimModal" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="space-y-3 mb-5">
+        <button data-scenario="monsoon_spike" class="w-full text-left p-3.5 rounded-xl bg-[#131B2E] hover:bg-[#1A2640] border border-[#213052] transition flex items-start gap-3">
+          <span class="text-xl">⛈️</span>
+          <div>
+            <div class="font-bold text-white text-xs">Pre-Monsoon Humidity Surge (Target: Silo 2 · Paddy)</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">82% ambient humidity + 85% rain probability triggers automatic vent seal advisory.</div>
+          </div>
+        </button>
+
+        <button data-scenario="hotspot_heating" class="w-full text-left p-3.5 rounded-xl bg-[#131B2E] hover:bg-[#1A2640] border border-[#213052] transition flex items-start gap-3">
+          <span class="text-xl">🔥</span>
+          <div>
+            <div class="font-bold text-white text-xs">Grain Core Thermal Hotspot (Target: Silo 4 · Wheat)</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Self-heating rate rises to +1.10°C/hr from localized mold/weevil respiration. High Risk alert.</div>
+          </div>
+        </button>
+
+        <button data-scenario="moisture_leak" class="w-full text-left p-3.5 rounded-xl bg-[#131B2E] hover:bg-[#1A2640] border border-[#213052] transition flex items-start gap-3">
+          <span class="text-xl">💧</span>
+          <div>
+            <div class="font-bold text-white text-xs">Roof Leak / Wet Grain Influx (Target: Silo 1 · Wheat)</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Moisture surges to 15.9%, crossing the critical 14.5% storage threshold.</div>
+          </div>
+        </button>
+
+        <button data-scenario="safe_winter" class="w-full text-left p-3.5 rounded-xl bg-[#131B2E] hover:bg-[#1A2640] border border-[#213052] transition flex items-start gap-3">
+          <span class="text-xl">❄️</span>
+          <div>
+            <div class="font-bold text-white text-xs">Stabilized Dry Winter Aeration (Target: Silo 3 · Maize)</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Cool 19.5°C and 48% RH safely stabilized within safe FAO equilibrium moisture limits.</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-[#213052]">
+        <button id="btnResetSim" class="px-3.5 py-1.5 rounded-lg bg-[#141E33] hover:bg-slate-800 text-slate-300 text-xs font-semibold border border-[#213052] transition">
+          <i class="fas fa-rotate-left mr-1"></i> Reset All Silos
+        </button>
+        <button onclick="closeSimModal()" class="px-4 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BENCHMARKS & SDG MODAL -->
+  <div id="metricsModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="product-card-elevated max-w-4xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-[#213052] mb-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fas fa-chart-pie text-cyan-400"></i>
+            <span>CS002 Technical Evaluation Benchmarks &amp; UN SDG Impact</span>
+          </h3>
+          <p class="text-xs text-slate-400">Verified against Chapter 8 of the Final Technical Report</p>
+        </div>
+        <button id="btnCloseMetricsModal" class="text-slate-400 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+
+      <!-- Table 8.1 -->
+      <div class="mb-6">
+        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Table 8.1: Technical Evaluation Metrics Summary</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-[#213052] text-[11px] text-slate-400">
+                <th class="py-2">Dimension</th>
+                <th class="py-2">Target</th>
+                <th class="py-2">Observed</th>
+                <th class="py-2">Evaluation Method</th>
+                <th class="py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody id="benchmarksTableBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Table 8.2 -->
+      <div>
+        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Table 8.2: Baseline vs. Outcome UN SDG Impact Assessment</h4>
+        <div id="sdgCardsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <div class="mt-6 pt-3 border-t border-[#213052] text-right">
+        <button onclick="closeMetricsModal()" class="px-4 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSPECTION REPORT MODAL (Print-Ready) -->
+  <div id="reportModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white text-slate-900 rounded-2xl max-w-3xl w-full p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+      
+      <!-- Report Header -->
+      <div class="flex items-start justify-between pb-4 border-b-2 border-slate-900 mb-6">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 uppercase tracking-tight">Grain Storage Microclimate Compliance &amp; Spoilage Audit Sheet</h2>
+          <p class="text-xs text-slate-600 mt-0.5">CS002 Community Service Project · Post-Harvest Loss Prevention</p>
+          <p class="text-xs text-slate-500">School of Engineering and Technology · K.R. Mangalam University</p>
+        </div>
+        <div class="text-right text-xs">
+          <div class="font-bold text-slate-900" id="reportFacility">Gurugram Central Agro-Mandi</div>
+          <div class="text-slate-600" id="reportDate">Date: 2026-11-22</div>
+          <div class="text-slate-500 font-numeric text-[10px]">Doc: AGY-CS002-2026</div>
+        </div>
+      </div>
+
+      <!-- Silo Audit Table -->
+      <table class="w-full text-left mb-6 border-collapse text-xs">
+        <thead>
+          <tr class="border-b-2 border-slate-900 text-slate-700 font-semibold">
+            <th class="py-2">Storage Unit</th>
+            <th class="py-2">Crop</th>
+            <th class="py-2">Temp</th>
+            <th class="py-2">RH</th>
+            <th class="py-2">Moisture</th>
+            <th class="py-2">Risk State</th>
+            <th class="py-2">Direction</th>
+          </tr>
+        </thead>
+        <tbody id="reportTableBody">
+          <!-- Populated dynamically -->
+        </tbody>
+      </table>
+
+      <!-- Auditor & Supervisor Signatures -->
+      <div class="border-t border-slate-300 pt-6 mt-6 grid grid-cols-2 gap-8 text-xs text-slate-700">
+        <div>
+          <p class="font-semibold mb-8">Audited By (Student Engineers):</p>
+          <p class="border-t border-slate-400 pt-1 font-medium">Chirag Chanchal (2501010071) &amp; Team</p>
+          <p class="text-[10px] text-slate-500">B.Tech CSE Core (Semester-III)</p>
+        </div>
+        <div>
+          <p class="font-semibold mb-8">Storage Facility In-Charge Sign-off:</p>
+          <p class="border-t border-slate-400 pt-1 font-medium">Authorized Mandi Godown Supervisor</p>
+          <p class="text-[10px] text-slate-500">Gurugram Agricultural Marketing Board</p>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-4 border-t border-slate-200 flex items-center justify-between no-print">
+        <button id="btnPrintReport" class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs transition flex items-center gap-2">
+          <i class="fas fa-print"></i> Print Official Audit Sheet
+        </button>
+        <button onclick="closeReportModal()" class="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-xs transition">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. FOOTER & CREDITS                        -->
+  <!-- ========================================== -->
+  <footer class="border-t border-[#1E2B45] bg-[#0A0E18] px-6 py-5 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <p class="font-semibold text-slate-300">
+          Team: Chirag Chanchal (2501010071) · Divyant (2501010230) · Aditya Diwakar (2501010020) · Adarsh Sharma (2501010171) · Sambhav Sharma (2501010015)
+        </p>
+        <p class="text-[11px] text-slate-500 mt-0.5">
+          Department of Computer Science &amp; Engineering · School of Engineering &amp; Technology · K.R. Mangalam University
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded bg-yellow-950 text-yellow-400 border border-yellow-800 text-[10px] font-bold">SDG 2: Zero Hunger</span>
+        <span class="px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800 text-[10px] font-bold">SDG 12: Responsible Production</span>
+        <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">SDG 13: Climate Action</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/js/i18n.js"></script>
+  <script src="/static/js/visualizers.js"></script>
+  <script src="/static/js/graph_viz.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local SQLite databases (auto-generated at runtime)
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# Environment files
+.env
+.env.local
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# IDE / Editor artifacts
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log

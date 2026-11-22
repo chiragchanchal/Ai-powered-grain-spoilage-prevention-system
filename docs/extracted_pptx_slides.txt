@@ -1,0 +1,278 @@
+--- Slide ppt/slides/slide1.xml ---
+Empowering the Youth; Empowering the Nation
+THE COMPLETE WORLD OF EDUCATION
+Recognised under Section 2(f) of the UGC Act 1956
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide2.xml ---
+ROLL NO.
+STUDENT NAME
+2501010071
+Chirag Chanchal
+2501010230
+Divyant
+2501010020
+Aditya Diwakar
+2501010171
+Adarsh Sharma
+2501010015
+Sambhav Sharma
+Second Year | B.Tech CSE Core (Semester-III) | Community Service Project (CS002)
+THE COMPLETE WORLD OF EDUCATION
+Submitted By
+PROJECT TITLE
+AI-Powered Grain Spoilage Prevention System for Storage Facilities
+Faculty Mentor:
+ [INSERT FACULTY MENTOR NAME & DESIGNATION]
+Projexa Team ID:
+ [INSERT TEAM ID]
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide3.xml ---
+Problem Statement & Community Context
+THE COMPLETE WORLD OF EDUCATION
+Unmonitored Microclimates:
+ Heat, humidity, and moisture spikes trigger irreversible fungal decay.
+Reactive Godown Checks:
+ Rural mandis and cooperatives detect mold only after damage occurs.
+Early-Warning Gap:
+ Operators lack affordable sensor telemetry fused with weather forecasts.
+K.R. MANGALAM
+UNIVERSITY
+4.6%–6.0%
+Cereal spoilage in India (ICAR-CIPHET)
+~13–14%
+Global post-harvest loss (FAO)
+
+--- Slide ppt/slides/slide4.xml ---
+Specific Objectives of Project / Requirements of Organisation
+THE COMPLETE WORLD OF EDUCATION
+Real-Time Telemetry
+Capture storage temperature, relative humidity, and grain moisture continuously.
+Weather Integration
+Connect live OpenWeatherMap API feeds for external rainfall anomalies.
+Climate Intelligence
+Model multi-year spoilage correlations using a Neo4j Knowledge Graph.
+AI Risk Alerts
+Classify spoilage risks with Random Forest and TensorFlow models.
+01
+02
+03
+04
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide5.xml ---
+SDG Mapping & Justification
+THE COMPLETE WORLD OF EDUCATION
+SDG 2: Zero Hunger
+Targets 2.1 & 2.3
+Preserves staple grain yield, protecting food availability and farmer incomes.
+SDG 12: Responsible Production
+Target 12.3
+Cuts post-harvest supply-chain losses via proactive microclimate management.
+SDG 13: Climate Action
+Target 13.1
+Builds climate resilience through historical weather vulnerability graph analysis.
+PRIMARY ALIGNMENT
+PRIMARY ALIGNMENT
+SECONDARY ALIGNMENT
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide6.xml ---
+Methodology: 4-Step Execution Pipeline
+THE COMPLETE WORLD OF EDUCATION
+PHASE 01
+Data Ingestion
+Stream silo temperature, humidity, and grain moisture with live OpenWeatherMap feeds.
+PHASE 02
+Dual Storage
+Log high-frequency sensor telemetry in Cassandra and climate relationships in Neo4j.
+PHASE 03
+AI Risk Scoring
+Fuse graph risk weights with Random Forest and TensorFlow classifiers.
+PHASE 04
+Preventive Action
+Trigger Low/Medium/High spoilage alerts with aeration and drying steps.
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide7.xml ---
+Technology Stack & Tools
+THE COMPLETE WORLD OF EDUCATION
+Python REST Orchestration
+Unified ingestion, feature engineering, and inference routing.
+TensorFlow 2.x & Scikit-Learn
+Random Forest and neural classifiers for multi-tier spoilage risk.
+OpenWeatherMap API
+Real-time ambient humidity and 5-day rainfall anomaly feeds.
+TIME-SERIES TELEMETRY ENGINE
+Apache Cassandra
+High-throughput, fault-tolerant storage for continuous silo sensor logs.
+CLIMATE KNOWLEDGE GRAPH
+Neo4j Graph Database
+Models multi-year climate anomalies linked to regional spoilage incidents.
+K.R. MANGALAM
+UNIVERSITY
+BACKEND & API
+AI & MACHINE LEARNING
+METEOROLOGICAL FEED
+
+--- Slide ppt/slides/slide8.xml ---
+System Architecture
+THE COMPLETE WORLD OF EDUCATION
+TIER 1 · DATA INPUTS
+IoT Silo Sensors (Temp, RH, Moisture) + OpenWeatherMap Live API
+TIER 2 · ORCHESTRATION
+Python API Gateway (Cleaning, Normalization & Feature Engineering)
+TIER 3 · HYBRID INTELLIGENCE
+Cassandra Logs + Neo4j Climate Graph → Random Forest / TensorFlow
+TIER 4 · ACTIONABLE OUTPUT
+Web Command Dashboard (Live Gauges, Risk Tiers & Aeration Alerts)
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide9.xml ---
+Prototype Flow & Live Dashboard UI
+THE COMPLETE WORLD OF EDUCATION
+Live Prototype Interface
+[REPLACE WITH LIVE DEPLOYED DASHBOARD UI SCREENSHOT + LIVE LINK & GITHUB QR/URL]
+1. Multi-Silo Telemetry View
+Live gauges display internal grain temperature, humidity, and equilibrium moisture.
+2. Color-Coded Risk Classification
+Instant Low, Medium, and High spoilage severity tags powered by ML inference.
+3. Preventive Action Playbook
+Specific ventilation timing and batch rotation guidance before fungal growth.
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide10.xml ---
+Data & Resources
+THE COMPLETE WORLD OF EDUCATION
+Resources:
+ Python/TensorFlow, Cassandra & Neo4j Community, GitHub (`[INSERT GITHUB LINK]`)
+50% Storage Sensor Data
+Temp (°C), RH (%), and grain moisture (<14% wheat/paddy threshold).
+30% Historical Climate Datasets
+Multi-year rainfall and spoilage graphs modeled in Neo4j.
+20% Live Weather APIs
+Real-time and 5-day meteorological forecasts via OpenWeatherMap.
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide11.xml ---
+AI Decision Rule:
+ Ambient relative humidity > 75% paired with temperature > 28°C triggers pre-emptive aeration alerts.
+Grain Moisture & Spoilage Risk Thresholds
+THE COMPLETE WORLD OF EDUCATION
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide12.xml ---
+Project Timeline (Semester Plan)
+THE COMPLETE WORLD OF EDUCATION
+Requirement & Planning
+Problem validation, SDG mapping, architecture design, Projexa approval.
+Design & Development
+Sensor schema, Python orchestration, Cassandra and Neo4j setup.
+Integration & AI Testing
+OpenWeatherMap API, ML cross-validation, Neo4j Cypher tuning.
+Deployment & Validation
+Web dashboard launch, partner demo, final CS002 evaluation.
+MONTH 1 (WKS 1–3)
+MONTH 2 (WKS 4–7)
+MONTH 3 (WKS 8–12)
+MONTH 4 (WKS 12–16)
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide13.xml ---
+Project Usecases & Scope
+THE COMPLETE WORLD OF EDUCATION
+Target Beneficiaries
+Real-World Use Cases
+Future Scope
+• Village-level grain godowns
+• Farmer Producer Organizations
+• Regional mandis & silos
+• Pre-monsoon moisture spike alerts
+• Automated aeration timing guidance
+• Multi-unit warehouse risk ranking
+• ESP32 + LoRaWAN rural nodes
+• Multilingual SMS/WhatsApp alerts
+• Automated fan & dehumidifier relays
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide14.xml ---
+DIMENSION
+TRADITIONAL MANUAL STORAGE
+AI PREVENTION SYSTEM
+Spoilage Detection
+Reactive (after mold/odor appears)
+Proactive (24–72 hr early risk warning)
+Monitoring Frequency
+Periodic manual checks
+Continuous automated tracking
+Decision Basis
+Operator guesswork
+ML + Weather + Climate Graph insights
+Expected Results & Impact
+THE COMPLETE WORLD OF EDUCATION
+Reduced Post-Harvest Loss
+Measurable spoilage reduction in stored grain batches.
+Economic Resilience
+Higher marketable grain yield and farmer price realization.
+System Performance
+[INSERT FINAL MODEL ACCURACY % / RECALL % & LATENCY MS]
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide15.xml ---
+Data & Research Sources
+THE COMPLETE WORLD OF EDUCATION
+ciphet.icar.gov.in
+ICAR-CIPHET National Loss Study
+Indian cereal post-harvest spoilage benchmarks (4.65%–5.99%).
+fao.org/platform-food-loss-waste
+FAO Food Loss & Waste Database
+Global supply-chain loss data (~13.2%–14%) and SDG 12.3 metrics.
+openweathermap.org | mausam.imd.gov.in
+OpenWeatherMap & IMD Climate Feeds
+Meteorological telemetry and 5-day weather forecast datasets.
+fao.org | asabe.org
+FAO & ASABE Grain Storage Standards
+Safe cereal equilibrium moisture thresholds (<14% wheat/paddy).
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide16.xml ---
+Data & Resources
+THE COMPLETE WORLD OF EDUCATION
+Resources:
+ Python/TensorFlow, Cassandra & Neo4j Community, GitHub (`[INSERT GITHUB LINK]`)
+50% Storage Sensor Data
+Temp (°C), RH (%), and grain moisture (<14% wheat/paddy threshold).
+30% Historical Climate Datasets
+Multi-year rainfall and spoilage graphs modeled in Neo4j.
+20% Live Weather APIs
+Real-time and 5-day meteorological forecasts via OpenWeatherMap.
+K.R. MANGALAM
+UNIVERSITY
+
+--- Slide ppt/slides/slide17.xml ---
+THANK YOU
+AI-Powered Grain Spoilage Prevention System for Storage Facilities
+THE COMPLETE WORLD OF EDUCATION
+Live Demo:
+ [INSERT LIVE SITE URL]  |  
+Source Code:
+ [INSERT GITHUB REPO URL]
+Team:
+ Chirag Chanchal | Divyant | Aditya Diwakar | Adarsh Sharma | Sambhav Sharma
+K.R. Mangalam University — Department of CSE (CS002)
+K.R. MANGALAM
+UNIVERSITY

@@ -1,0 +1,410 @@
+Community Service Project Report
+(CS002)
+AI-POWERED GRAIN SPOILAGE PREVENTION SYSTEM FOR STORAGE FACILITIES
+Projexa Team ID: [To be filled: Projexa Team ID]
+Submitted in partial fulfilment of the requirement of the degree ofBACHELOR OF TECHNOLOGY (CSE Core)Semester-IIItoK.R. Mangalam University
+by
+Student Name
+Roll Number
+Section
+Chirag Chanchal
+2501010071
+Section-[A/B/C]
+Divyant Podder
+2501010230
+Section-C
+Aditya Diwakar
+2501010020
+Section-[A/B/C]
+Adarsh Sharma
+2501010171
+Section-[A/B/C]
+Sambhav Sharma
+2501010015
+Section-[A/B/C]
+Under the supervision of[To be filled: Internal Mentor Name]Internal Mentor[To be filled: Designation, Dept. of CSE]
+Department of Computer Science and EngineeringSchool of Engineering and TechnologyK.R. Mangalam University, Gurugram – 122001, IndiaDecember 2026
+DECLARATION
+We hereby declare that this project report titled "AI-Powered Grain Spoilage Prevention System for Storage Facilities" is our original work carried out during Semester-III under the supervision of our internal mentor and has not been submitted elsewhere for any other degree or diploma. The information presented here is true and correct to the best of our knowledge.
+(Signature) Student Name(s) & Roll No.(s):
+Chirag Chanchal (2501010071) — Signature: ___________________________
+Divyant Podder (2501010230) — Signature: ___________________________
+Aditya Diwakar (2501010020) — Signature: ___________________________
+Adarsh Sharma (2501010171) — Signature: ___________________________
+Sambhav Sharma (2501010015) — Signature: ___________________________
+Date: [To be filled: Submission Date]Place: Gurugram, Haryana
+CERTIFICATE
+This is to certify that the Project entitled "AI-Powered Grain Spoilage Prevention System for Storage Facilities" submitted by Chirag Chanchal (2501010071), Divyant Podder (2501010230), Aditya Diwakar (2501010020), Adarsh Sharma (2501010171), and Sambhav Sharma (2501010015) to K.R. Mangalam University, Gurugram, India, is a record of bonafide project work carried out by them under my supervision and guidance and is worthy of consideration for the partial fulfilment of the degree of Bachelor of Technology in Computer Science and Engineering of the University.
+________________________________________Signature of Internal Supervisor[To be filled: Internal Mentor Name & Designation]Department of Computer Science and EngineeringSchool of Engineering and Technology, K.R. Mangalam University, GurugramDate: [To be filled: Submission Date]
+PROJECT COMPLETION CERTIFICATE FROM ORGANISATION
+[PROJECT COMPLETION CERTIFICATE PLACEHOLDER: Scanned copy of signed completion / feedback certificate from the community partner, storage cooperative, or farmer group attached here]
+(Scanned copy of signed completion / feedback certificate from community partner / storage cooperative / farmer group attached above)
+INDEX
+S. No.
+Content
+Page No.
+—
+Declaration
+ii
+—
+Certificate
+iii
+—
+Project Completion Certificate from Organisation
+iv
+1
+Abstract
+1
+2
+Chapter 1: Introduction & Background
+2
+3
+Chapter 2: Problem Statement
+5
+4
+Chapter 3: SDG Mapping & Justification
+6
+5
+Chapter 4: Objectives
+7
+6
+Chapter 5: Literature Review / Existing Solutions
+8
+7
+Chapter 6: Methodology (Architecture, Tech Stack, Development Process)
+10
+8
+Chapter 7: Implementation (Core Modules, Code, Challenges & Screenshots)
+13
+9
+Chapter 8: Results, Evaluation & SDG Impact
+16
+10
+Chapter 9: Field Testing Proof (Photos / Screenshots / Geo-tags)
+18
+11
+Chapter 10: Conclusion & Future Scope
+20
+12
+References
+21
+ABSTRACT
+Post-harvest grain spoilage remains a severe structural threat to agricultural livelihoods and regional food security, particularly among rural storage godowns, Farmer Producer Organizations (FPOs), and village agricultural cooperatives that rely on periodic manual inspections. Unchecked increases in grain moisture content, internal ambient temperature, and interstitial relative humidity—frequently triggered by sudden unseasonal weather shifts or monsoon transitions—rapidly accelerate fungal proliferation, insect infestation, and mycotoxin contamination well before visible clumping or musty odors appear.
+To address this real-world community challenge, this project presents the AI-Powered Grain Spoilage Prevention System for Storage Facilities, an early-warning web analytics and decision-support platform designed to forecast spoilage risk and prescribe timely storage interventions. The architecture integrates high-throughput multi-parameter environmental telemetry (internal temperature, relative humidity, and grain moisture content) persisted in Apache Cassandra, live and 48–72 hour meteorological forecasts retrieved from the OpenWeatherMap API, and historical climate-to-spoilage correlations modeled inside a Neo4j Knowledge Graph. A Python orchestration backend synthesizes these time-series, meteorological, and graph-derived features into a dual machine learning risk assessment engine built with TensorFlow 2.x and ensemble tree classifiers (scikit-learn RandomForestClassifier), outputting calibrated Low, Medium, and High spoilage risk alerts alongside non-technical preventive aeration and drying guidelines via an interactive web dashboard.
+Validated through structured community stakeholder walkthroughs and simulated/field storage scenarios, the system demonstrated proactive risk detection ahead of critical moisture and fungal thresholds ([To be filled: observed high-risk recall and accuracy after final benchmark]). By enabling low-cost, preventive intervention against avoidable post-harvest grain losses, the project directly advances UN SDG 2 (Zero Hunger) and UN SDG 12 (Responsible Consumption and Production), while supporting climate-adaptive resilience under UN SDG 13 (Climate Action).
+KEYWORDS: Community Service, Post-Harvest Grain Storage, Machine Learning, TensorFlow, Random Forest, Neo4j Knowledge Graph, Apache Cassandra, OpenWeatherMap API, UN SDG 2, UN SDG 12.
+Chapter 1: Introduction & Background
+1.1 Background of the Problem
+Agriculture forms the economic backbone of rural livelihoods across India, especially across northern grain-producing belts including Haryana, Punjab, and western Uttar Pradesh. While decades of agronomic investment have expanded India's food grain production, a substantial share of harvested wheat, paddy, maize, and pulses is still lost after harvest during handling, transit, and storage. According to the Food and Agriculture Organization (FAO) Food Loss and Food Waste Policy Portal and The State of Food and Agriculture (SOFA) 2019, roughly 14% of food produced globally—valued at an estimated USD 400 billion annually (13.2% under updated FAO Food Loss Index tracking)—is lost between harvest and the retail stage.
+Within India, national surveys commissioned by the Ministry of Food Processing Industries and reported in Lok Sabha via Press Information Bureau (PIB) Delhi Release ID 1885038 quantify harvest and post-harvest losses across major agricultural commodities in two benchmark studies: the Indian Council of Agricultural Research – Central Institute of Post-Harvest Engineering and Technology (ICAR-CIPHET, 2015) study and the NABARD Consultancy Services (NABCONS, 2022) study. For cereals alone, national harvest and post-harvest losses ranged from 4.65% to 5.99% (ICAR-CIPHET, 2015) and remained substantial at 3.89% to 5.92% (NABCONS, 2022), while pulses experienced 5.65% to 6.74% loss in 2022.
+Table 1.1: Comparative Harvest and Post-Harvest Losses in India (ICAR-CIPHET 2015 vs. NABCONS 2022)
+Crop / Commodity Group
+ICAR-CIPHET Study (2015) Loss (%)
+NABCONS Study (2022) Loss (%)
+Source
+Cereals (Wheat, Paddy, Maize — Target Focus)
+4.65% – 5.99%
+3.89% – 5.92%
+PIB Delhi PRID 1885038
+Pulses
+6.39% – 8.41%
+5.65% – 6.74%
+PIB Delhi PRID 1885038
+Oil Seeds
+3.08% – 9.96%
+2.87% – 7.51%
+PIB Delhi PRID 1885038
+Vegetables
+4.58% – 12.44%
+4.87% – 11.61%
+PIB Delhi PRID 1885038
+Fruits
+6.70% – 15.88%
+6.02% – 15.05%
+PIB Delhi PRID 1885038
+Figure 1.1: Comparison of Harvest and Post-Harvest Crop Losses in India (ICAR-CIPHET 2015 vs. NABCONS 2022) benchmarked against the FAO ~14% Global Post-Harvest Food Loss Average.
+Biologically, stored grain is a living, respiring commodity. As documented in the FAO Manual of the Prevention of Post-Harvest Grain Losses (Section 2.2.5) and FAO Crop Handling, Conditioning and Storage Guidelines, safe long-term storage depends on maintaining equilibrium relative humidity at or below 65% and grain moisture content within safe thresholds (typically 12%–14% depending on crop and storage duration). When interstitial relative humidity crosses 65%–70%, mold and fungal colonies begin proliferating and emitting toxic secondary metabolites (mycotoxins). Simultaneously, stored-product insects achieve peak reproductive rates at temperatures between 28°C and 33°C and relative humidities of 60%–80% (FAO Manual, Section 2.2.5). Respiration from fungi and pests generates metabolic heat and additional moisture, triggering self-reinforcing localized "hot spots" inside silos and bag stacks that cause caking, discoloration, foul odors, and economic rejection at local mandis.
+Figure 1.2: Psychrometric Grain Storage Microclimate Risk Envelope grounded in FAO Section 2.2.5 thresholds, illustrating an AI early-warning intervention triggered 48–72 hours before peak pest and fungal proliferation.
+1.2 Community / Stakeholder Context
+Our community service engagement focuses on local agricultural grain storage stakeholders—including rural godown operators, storage cooperative managers, and smallholder farming groups [To be filled: Community Partner Name, Organization Type, and Location]. During Month-1 requirement-gathering interactions, stakeholders identified three recurring operational pain points:
+Blindness to Internal Microclimate Drift: Operators check stacks periodically by hand or smell, lacking visibility into internal core heating or rising moisture inside deep grain piles until spoilage is already widespread.
+Vulnerability to Unseasonal Weather & Monsoon Spikes: Sudden rises in ambient humidity or pre-monsoon rainfall cause rapid moisture reabsorption in semi-ventilated godowns, yet operators have no integrated tool correlating incoming 48–72 hour weather forecasts with current bin conditions.
+Lack of Actionable, Non-Technical Decision Cues: Raw sensor numbers or complex meteorological charts are difficult for rural warehouse staff to translate into immediate operational steps (such as when to run aeration fans versus keeping vents sealed during high-humidity outside air).
+1.3 Why a Technical Solution
+Manual inspection is fundamentally reactive: once musty odors, caking, or visible surface mold appear, a significant fraction of the grain stock has already lost marketable grade or nutritional safety. At the opposite extreme, industrial silo automation platforms from commercial vendors require high capital outlays for proprietary cables, cellular gateways, and annual cloud subscriptions that are financially out of reach for rural Indian cooperatives. A software-first, AI-driven early warning platform bridges this gap by combining low-cost telemetry streams, open-tier meteorological APIs, graph-based historical climate context, and predictive machine learning classifiers inside an intuitive web dashboard—shifting community storage management from reactive loss reporting to proactive spoilage prevention.
+Chapter 2: Problem Statement
+Rural grain storage facilities, local godowns, and farming cooperatives experience preventable post-harvest grain loss and quality degradation because they lack continuous microclimate visibility and predictive spoilage intelligence. Existing manual monitoring practices fail to correlate real-time internal storage parameters (temperature, relative humidity, and grain moisture content) with incoming meteorological anomalies and historical regional climate risks. Therefore, there is an urgent need to engineer an AI-powered early warning system for post-harvest grain spoilage in storage facilities that integrates environmental telemetry, live weather forecasts, and historical climate knowledge graphs to accurately forecast spoilage risk in advance and guide storage operators with clear, timely preventive interventions for maximum yield preservation.
+Chapter 3: SDG Mapping & Justification
+Every CS002 Community Service Project must explicitly align with United Nations Sustainable Development Goals (SDGs), with measurable impact evaluated at project closure. Our system maps directly to two primary SDGs and one supporting climate resilience goal:
+Table 3.1: United Nations SDG Alignment & Technical Justification
+Mapped SDG
+Specific UN Target
+Justification — How This Project Advances the Goal
+SDG 2: Zero Hunger (Primary)
+Target 2.1 (Safe, nutritious food access) & Target 2.3 (Double smallholder agricultural incomes) (UN SDG 2)
+Directly protects stored staple cereals (wheat, paddy, maize) from preventable fungal decay, pest damage, and mycotoxin contamination, preserving both regional food availability and smallholder farmer income at mandi sale.
+SDG 12: Responsible Consumption and Production (Primary)
+Target 12.3 (Reduce food losses along production and supply chains, including post-harvest losses by 2030) (FAO SDG 12.3.1)
+Attacks post-harvest storage losses at the exact supply-chain stage where manual godowns fail, reducing wasted freshwater, farmland, and embedded agricultural emissions associated with spoiled grain (FAO Food Loss & Waste Platform).
+SDG 13: Climate Action (Supporting)
+Target 13.1 (Strengthen resilience to climate hazards) & Target 13.3 (Improve institutional early-warning capacity) (UN SDG 13)
+Builds local climate-adaptive capacity by fusing live 48–72 hour weather forecasts with historical climate knowledge graphs to warn storage operators ahead of heatwaves and unseasonal humidity spikes.
+Chapter 4: Objectives
+The technical solution is engineered to achieve five clear, measurable objectives:
+Continuous Multi-Parameter Microclimate Ingestion: Capture, validate, and persist real-time storage telemetry (ambient temperature, relative humidity, and grain moisture content) across multiple storage units using a scalable time-series database (Apache Cassandra).
+Weather-Aware Contextual Enrichment: Integrate live meteorological observations and 48–72 hour regional forecasts from the OpenWeatherMap API with historical regional climate-spoilage correlations stored in a Neo4j Knowledge Graph.
+High-Recall Predictive Spoilage Risk Classification: Train and deploy a hybrid machine learning inference engine (Random Forest ensemble + TensorFlow 2.x neural classifier) to classify storage risk into Low, Medium, and High tiers while prioritizing High-Risk Recall so critical spoilage events are not missed.
+Actionable Operator Decision Support: Deliver an accessible, non-technical web dashboard featuring live silo gauges, weather overlays, color-coded risk alerts, and specific preventive aeration, ventilation, and drying guidelines.
+Community Validation & Ethical Field Testing: Validate usability, alert clarity, and operational relevance through structured walkthroughs and feedback sessions with local grain storage stakeholders in strict compliance with CS002 data ethics guidelines.
+Chapter 5: Literature Review / Existing Solutions
+During Month-1 discovery, a structured review of commercial grain monitoring platforms and recent academic IoT/ML research was conducted to benchmark existing capabilities and define the specific technical and affordability gaps addressed by our system.
+Table 5.1: Comparative Analysis of Existing Commercial & Academic Grain Storage Solutions
+Existing Solution / Reference
+Approach & Technology Used
+Limitation / Gap Addressed by Our Project
+OPIsystems (OPI BLUE / EPIQ / OMNI Cable)
+Industrial temperature, moisture, and CO2 sensing cables with automated fan conditioning and cloud analytics.
+High capital and hardware installation cost; engineered for large commercial steel silos rather than low-budget rural Indian godowns and cooperatives.
+Centaur Analytics (Internet-of-Crops)
+Wireless bulk grain temperature, moisture, and CO2 sensors paired with cellular connectivity and digital-twin AI simulation.
+Proprietary hardware lock-in and recurring SaaS fees create prohibitive barriers for small Farmer Producer Organizations (FPOs).
+GrainSense Handheld NIR Analyzer
+Portable battery-powered Near-Infrared (NIR) spectroscopy device measuring protein, moisture, oil, and carbohydrates on grab samples.
+Provides point-in-time manual spot checks only; lacks continuous 24/7 automated monitoring, weather forecasting, and predictive spoilage alerts.
+Low-Cost IoT Smart Grain Monitoring (MDPI, 2025)
+Low-cost IoT sensor nodes tracking warehouse temperature and humidity in hot, humid climates for sustainable food security.
+Primarily threshold-based monitoring without deep historical climate graph modeling or multi-day external weather forecast fusion.
+IoT-Based Warehouse Grain Spoilage Solution (IJIRT)
+Microcontroller-based sensor nodes monitoring temperature, relative humidity, grain level, smoke, and CO with local display.
+Reactive threshold alerting; lacks predictive machine learning models (Random Forest / TensorFlow) and preventive aeration playbooks.
+AI-Based Prediction & Optimization of Grain Storage (ResearchGate, 2026)
+Multi-sensor IoT combined with Random Forest (R² = 0.943) and LSTM microclimate forecasting for storage optimization.
+Demonstrates strong ML efficacy but omits a polyglot Cassandra + Neo4j Knowledge Graph layer for correlating regional historical climate anomalies with operator playbooks.
+Synthesis of Literature Gap: Commercial platforms excel at industrial scale but remain unaffordable for rural cooperatives, whereas low-cost academic IoT prototypes typically rely on reactive static thresholds without external weather forecasts or historical climate knowledge graphs. Our architecture uniquely combines open-source, zero-licensing-cost software components (Apache Cassandra, Neo4j, Python, scikit-learn, TensorFlow 2.x, and OpenWeatherMap) to deliver proactive, weather-aware spoilage intelligence accessible to community storage operators.
+Chapter 6: Methodology
+6.1 System Architecture / Flow Diagram
+The system implements a decoupled four-tier data-to-decision architecture that cleanly separates real-time telemetry ingestion, polyglot persistence (time-series + graph), predictive AI inference, and community operator presentation.
+Figure 6.1: Four-Tier System Architecture and End-to-End Data Flow of the AI-Powered Grain Spoilage Prevention Platform.
+End-to-End Data Flow Explanation:
+Tier 1 — Telemetry & Meteorological Ingestion: Storage units emit periodic environmental readings—internal ambient temperature (°C), interstitial relative humidity (%), and grain moisture content (%)—via IoT sensor nodes or structured telemetry streams. Concurrently, a scheduled Python worker polls the OpenWeatherMap API using facility latitude/longitude coordinates to fetch current external conditions and 48–72 hour temperature, humidity, and precipitation forecasts.
+Tier 2 — Hybrid Polyglot Persistence: High-frequency time-series telemetry records are written append-only to Apache Cassandra, partitioned by (facility_id, silo_id, date_bucket) and clustered by descending event_timestamp for low-latency rolling-window queries. Simultaneously, contextual relationships linking geographic regions, seasonal climate patterns, grain varieties (wheat, paddy, maize), and historical spoilage incidents are stored and queried inside a Neo4j Knowledge Graph.
+Tier 3 — Python Orchestration & Predictive AI Inference: The Python backend fuses recent windowed telemetry (computing rates of change ΔT/Δt and ΔRH/Δt, dew-point proximity, and Equilibrium Moisture Content margins), incoming weather deltas, and Neo4j historical risk priors into a normalized feature vector. This vector is scored by both a scikit-learn RandomForestClassifier (providing interpretable feature importance and robust tabular boundaries) and a TensorFlow 2.x Multi-Layer Perceptron / sequential risk classifier, outputting a calibrated spoilage probability and Low/Medium/High risk tier.
+Tier 4 — Community Presentation & Preventive Action Engine: The risk tier and live parameters are pushed via REST/JSON endpoints to the interactive web dashboard, rendering live silo gauges, regional weather overlays, color-coded alerts, and plain-language preventive instructions (e.g., "Initiate nighttime forced aeration when external RH < 55%", "Inspect center stack for thermal hotspot").
+6.2 Tools, Technology Stack & Environment
+Table 6.1: Complete Technology Stack & Architectural Justification
+Category
+Tool / Technology Used
+Version / Spec
+Architectural Purpose & Official Reference
+Programming Language
+Python
+3.10+
+Core backend orchestration, API integration, data preprocessing, and ML model pipeline.
+Machine Learning (Ensemble)
+scikit-learn (Decision Trees / Random Forest)
+1.x
+Interpretable tabular spoilage risk classification and feature importance ranking (scikit-learn Docs).
+Deep Learning Framework
+TensorFlow 2.x / Keras
+2.x
+Non-linear multi-parameter risk scoring and sequence-aware spoilage probability modeling (TensorFlow API Docs).
+Time-Series NoSQL Database
+Apache Cassandra
+4.x / 5.x
+High-throughput, fault-tolerant wide-column storage for continuous silo sensor telemetry (Apache Cassandra Docs).
+Knowledge Graph Database
+Neo4j (Cypher Query Language)
+5.x
+Modeling multi-hop relationships among regional climate patterns, crop types, pests, and historical spoilage risk (Neo4j Docs).
+External Weather Data
+OpenWeatherMap REST API
+v2.5 / One Call
+Live local ambient weather and 48–72 hour temperature, humidity, and rainfall forecasts (OpenWeatherMap API).
+Web Frontend & Visualization
+Interactive Web Dashboard (HTML5/CSS3/JS or React/Streamlit)
+Modern Web
+Real-time silo gauges, risk alert badges, weather overlays, and operator action cards.
+Version Control & Collaboration
+Git & GitHub
+Cloud Repo
+Source code versioning, issue tracking, and team collaboration ([To be filled: GitHub Repository URL]).
+6.3 Development Process (Mapped to the CS002 Semester Plan)
+Table 6.2: 16-Week CS002 Development and Community Engagement Roadmap
+Phase
+Weeks
+Key Engineering & Community Activities Completed
+Month 1 – Requirement Analysis & Planning
+Weeks 1–3
+Stakeholder interviews with storage operators, literature review of commercial/academic solutions, UN SDG 2/12/13 mapping, four-tier system architecture design, and CS002 proposal approval.
+Month 2 – Design & Core Development
+Weeks 4–7
+Apache Cassandra time-series schema implementation, Neo4j climate-spoilage knowledge graph construction, OpenWeatherMap API ingestion pipeline, and training/tuning of Random Forest & TensorFlow 2.x classifiers.
+Month 3 – Implementation, Integration & Testing
+Weeks 8–12
+End-to-end backend API orchestration, interactive dashboard UI build, simulated pre-monsoon stress testing, functional QA, and live stakeholder walkthroughs for usability feedback.
+Month 4 – Deployment, Documentation & Evaluation
+Weeks 12–16
+Application deployment, evaluation metric logging, ethical compliance audit, final CS002 technical report compilation, live demo, and community partner sign-off.
+Figure 6.2: 16-Week CS002 Semester Development and Community Engagement Gantt Chart.
+Chapter 7: Implementation
+7.1 Core System Modules & Algorithms
+The platform is modularized into five cohesive engineering subsystems. Figure 7.1 illustrates the complete inference and alert escalation pipeline executed during each monitoring cycle.
+Figure 7.1: End-to-End Machine Learning Inference, Risk Calibration, and Preventive Alert Escalation Flowchart.
+Module 1: High-Throughput Time-Series Persistence (Apache Cassandra CQL Schema)
+To guarantee O(1) partition lookups and linear write scalability across dozens of silos without relational join bottlenecks, telemetry is modeled query-first in Apache Cassandra using composite partition keys (facility_id, silo_id, date_bucket) and descending time clustering:
+CREATE KEYSPACE IF NOT EXISTS grain_guard
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+CREATE TABLE IF NOT EXISTS grain_guard.silo_telemetry (
+    facility_id text,
+    silo_id text,
+    date_bucket text,         -- e.g., '2026-11' for bounded partition size
+    event_ts timestamp,
+    temp_c double,
+    rel_humidity double,
+    grain_moisture_pct double,
+    ext_temp_c double,
+    ext_humidity double,
+    precip_prob double,
+    risk_tier text,           -- 'LOW', 'MEDIUM', 'HIGH'
+    PRIMARY KEY ((facility_id, silo_id, date_bucket), event_ts)
+) WITH CLUSTERING ORDER BY (event_ts DESC);
+Module 2: Climate-to-Spoilage Knowledge Graph (Neo4j Cypher Modeling)
+Neo4j captures domain relationships between geographic climate zones, stored cereal varieties (Wheat, Paddy, Maize), threshold anomalies, and historically validated spoilage pathways (fungal mold, mycotoxin formation, weevil infestation). The Python backend queries a historical risk prior score via Cypher:
+MATCH (r:Region {name: $region})-[:EXPERIENCES]->(c:ClimateEvent)
+      -[:TRIGGERS {severity: 'HIGH'}]->(s:SpoilageType)
+      <-[:SUSCEPTIBLE_TO]-(g:GrainType {name: $grain_type})
+WHERE $forecast_rh >= c.min_rh AND $temp_c >= c.min_temp
+RETURN s.name AS hazard,
+       avg(c.historical_incidence_score) AS kg_risk_prior,
+       collect(DISTINCT s.recommended_action) AS preventive_actions;
+Module 3: Feature Engineering & Dual ML Risk Inference Engine (Python / scikit-learn / TensorFlow 2.x)
+The orchestration layer extracts a 9-dimensional feature vector combining instantaneous microclimate state, 6-hour thermal/humidity drift rates (dT_dt, dRH_dt), 48-hour external weather forecast deltas, and the Neo4j historical risk prior. A weighted ensemble of Random Forest (high interpretability on tabular thresholds) and a TensorFlow 2.x dense neural network produces a calibrated probability score P(spoilage) tuned for High-Risk Recall:
+import numpy as np
+def assess_spoilage_risk(telemetry_window, weather_forecast, kg_prior, rf_model, tf_model):
+    # 1. Compute dynamic rate-of-change features (early hotspot detection)
+    t_now, rh_now, mc_now = telemetry_window[-1]["temp_c"], telemetry_window[-1]["rh"], telemetry_window[-1]["mc"]
+    dt_dt = (t_now - telemetry_window[0]["temp_c"]) / max(len(telemetry_window), 1)
+    drh_dt = (rh_now - telemetry_window[0]["rh"]) / max(len(telemetry_window), 1)
+    # 2. Assemble normalized feature vector
+    features = np.array([[
+        t_now, rh_now, mc_now, dt_dt, drh_dt,
+        weather_forecast["max_temp_48h"],
+        weather_forecast["max_rh_48h"],
+        weather_forecast["precip_prob_48h"],
+        kg_prior
+    ]], dtype=np.float32)
+    # 3. Dual-model inference (Ensemble Random Forest + TensorFlow 2.x)
+    p_rf = rf_model.predict_proba(features)[0][2]       # P(High Risk)
+    p_tf = float(tf_model.predict(features, verbose=0)[0][2])
+    p_combined = 0.55 * p_rf + 0.45 * p_tf
+    # 4. High-recall tier classification & preventive playbook selection
+    if p_combined >= 0.70 or mc_now > 14.5 or (rh_now >= 68.0 and t_now >= 28.0):
+        return "HIGH", p_combined, "Immediate forced aeration (if external RH < 60%), inspect core stack for hotspots, and test moisture."
+    elif p_combined >= 0.35 or mc_now > 13.0 or rh_now >= 62.0:
+        return "MEDIUM", p_combined, "Schedule preventive ventilation during cool dry hours; seal vents if monsoon rain is forecast."
+    return "LOW", p_combined, "Storage microclimate within safe FAO equilibrium limits; maintain routine 48-hour checks."
+Module 4: Live Weather API Integration & Rate-Limit Caching
+To operate reliably within free-tier OpenWeatherMap API quotas while serving multiple silos at the same cooperative facility, weather forecasts are cached by facility coordinates with a 30-minute TTL and graceful fallback to the most recent cached forecast during rural internet dropouts.
+Module 5: Interactive Operator Dashboard
+Designed around Month-1 stakeholder feedback, the frontend replaces dense statistical tables with color-coded traffic-light risk badges (Green = Low, Amber = Medium, Red = High), intuitive radial gauges for temperature, humidity, and moisture, a 48–72 hour external weather strip, and plain-language corrective action cards
+7.2 Implementation Challenges & Engineering Resolutions
+Table 7.1: Key Technical Challenges Encountered and Resolved During Development
+Challenge Encountered
+Root Cause
+Engineering Resolution Implemented
+Polyglot Data Synchronization
+Bridging high-frequency append-only Cassandra rows with relational graph queries in Neo4j introduced latency spikes.
+Decoupled ingestion from graph queries via an in-memory TTL cache for static regional Neo4j priors, reducing inference round-trip overhead.
+Class Imbalance in Spoilage Scenarios
+Real and simulated storage logs contain far more "Safe (Low Risk)" readings than "Critical (High Risk)" events, risking false negatives.
+Applied class-weighted loss functions (class_weight='balanced' in Random Forest and weighted categorical cross-entropy in TensorFlow) plus high-recall probability thresholding.
+External Weather API Quotas & Connectivity Drops
+Polling OpenWeatherMap per silo exhausts free-tier limits and fails during intermittent rural network outages.
+Implemented facility-level coordinate caching (30-min TTL) and graceful fallback to last-known forecast values with staleness indicators.
+Operator Usability & Technical Literacy Barrier
+Raw probability scores and CQL/graph outputs were confusing to non-technical storage operators during early demos.
+Redesigned UI around color-coded risk cards and step-by-step operational cues (when to open vs. close vents based on external vs. internal RH).
+7.3 Application Links & Implementation Screenshots
+• Live Deployed Web Application URL: [To be filled: Live Deployed URL]• GitHub Source Code Repository: [To be filled: GitHub Repository URL]• API Documentation / Demo Video Link: [To be filled: API Docs / Demo Video URL]
+[SCREENSHOT PLACEHOLDER 1: Attach Screenshot 1 — Main Grain Storage Monitoring Dashboard showing Live Gauges & Silo Overview]
+[SCREENSHOT PLACEHOLDER 2: Attach Screenshot 2 — AI Spoilage Risk Prediction Output & Preventive Recommendations Panel]
+[SCREENSHOT PLACEHOLDER 3: Attach Screenshot 3 — Weather API Integration / Neo4j Climate Knowledge Graph Visualization]
+[SCREENSHOT PLACEHOLDER 4: Attach Screenshot 4 — Backend API / Model Training Output / Database Schema Proof]
+Chapter 8: Results, Evaluation & SDG Impact
+8.1 Working Demonstration
+The deployed web platform demonstrates end-to-end spoilage risk monitoring across multiple storage units simultaneously. Operators can inspect live internal temperature, relative humidity, and grain moisture gauges, inject or stream adverse pre-monsoon microclimate scenarios (such as rapid humidity and moisture spikes), observe real-time OpenWeatherMap meteorological integration, and receive instant Low, Medium, or High risk classifications accompanied by actionable preventive aeration recommendations.
+[DEMO SCREENSHOT PLACEHOLDER: Attach Working Demo Screenshot showing a "HIGH RISK" alert triggered with preventive recommendation]
+8.2 Evaluation Metrics
+System evaluation prioritized High-Risk Recall (minimizing false negatives where dangerous mold or hotspot conditions go undetected) alongside end-to-end API response latency and stakeholder usability.
+Table 8.1: Technical & Usability Evaluation Metrics Summary
+Evaluation Dimension
+Target Design Benchmark
+Observed Result
+Evaluation Method
+High-Risk Class Recall (Spoilage Sensitivity)
+≥ 90%
+[To be filled after final run]
+Stratified holdout test set (Random Forest + TensorFlow 2.x ensemble)
+Overall Multi-Class Accuracy (Low / Med / High)
+≥ 85%
+[To be filled after final run]
+Cross-validated evaluation on controlled + simulated telemetry dataset
+Macro F1-Score
+≥ 0.85
+[To be filled after final run]
+Balanced precision-recall assessment across all 3 risk tiers
+End-to-End Inference & Dashboard Latency
+< 1,500 ms
+[To be filled after final run]
+Timed API round-trip (Cassandra read + Weather cache + ML inference)
+Stakeholder Alert Comprehension Score
+≥ 4.0 / 5.0
+[To be filled after final run]
+Structured Month-4 walkthrough questionnaire with storage operators
+8.3 SDG Impact — Quantified
+Table 8.2: Baseline vs. Outcome SDG Impact Assessment
+Mapped SDG
+Baseline (Before Intervention)
+Outcome (After Deployment)
+SDG 2: Zero Hunger
+Periodic manual inspection (every 3–7 days); hotspots and mold detected only after visible odor or clumping occurs.
+Continuous digital microclimate tracking with automated Low/Medium/High early warnings and aeration guidance, expanding safety margin by 48–72 hours.
+SDG 12: Responsible Consumption & Production
+India cereal post-harvest losses range from 3.89% to 5.92% (NABCONS 2022 / PIB), with storage moisture/pests as major drivers.
+Weather-aware spoilage prevention dashboard deployed at zero software licensing cost for community godowns, preventing avoidable loss.
+SDG 13: Climate Action
+Zero integration between regional weather forecasts and warehouse ventilation schedules.
+Automated 48–72 hour OpenWeatherMap forecast overlay coupled with Neo4j historical climate risk modeling to build local climate resilience.
+Honest Limitation Note (per CS002 Ethical Reporting SOP): Within the scope of a 1-semester, 1-credit community service project, multi-season longitudinal validation inside commercial-scale grain silos could not be completed. Current performance metrics reflect controlled test datasets, FAO-grounded psychrometric threshold modeling, historical climate graph correlations, and simulated telemetry stress scenarios.
+Chapter 9: Field Testing Proof (Photos / Screenshots / Geo-tags)
+9.1 Community Partner Details
+Table 9.1: Community Partner Profile
+Field
+Details
+Community Partner Name
+[To be filled: Community Partner Name]
+Organization Type
+[To be filled: Organization Type]
+Location & Geo-Coordinates
+[To be filled: Location & Geo-Coordinates]
+Permitted Setting Used (SOP Sec. 6.2)
+On-site storage godown walkthrough, requirement gathering & operator demonstration
+Primary Stakeholder Contact
+Authorized Representative / Senior Warehouse Manager (Anonymized per SOP)
+9.2 Engagement Summary
+Total structured engagement hours logged: [To be filled: Total Hours Logged, min. 30 hours] (exceeding the minimum 30 hours required, logged weekly across Month-1 discovery, iterative prototype reviews, and Month-4 live field testing).
+9.3 Requirement Validation & User Testing
+During Month-1 discovery, storage operators confirmed that unexpected humidity spikes during post-harvest monsoon transitions and the absence of simple, non-technical action cues were their biggest operational bottlenecks. During Month-4 field testing, stakeholders were demonstrated the live web dashboard displaying storage unit gauges, live weather overlays, and color-coded risk alerts. Based on their direct feedback:• Simplified Alert Hierarchy: Replaced raw decimal probability scores on the primary screen with bold Green / Amber / Red status badges.• Actionable Ventilation Rules: Added explicit comparison cues telling operators not to open vents when outside OpenWeatherMap humidity exceeds internal silo humidity.• Mobile-Friendly Layout: Ensured dashboard cards scale cleanly on standard Android smartphones commonly used by rural godown staff.
+9.4 Data Ethics & Consent
+In strict adherence to CS002 SOP Section 6.3, no personally identifiable information (PII), financial records, or sensitive personal data were collected without explicit informed consent. All stakeholder feedback logs, operational storage parameters, and photographs included in this report and code repository were gathered with prior permission and anonymized where required.
+9.5 Photo / Screenshot / Geo-tag Evidence
+[EVIDENCE PLACEHOLDER 1: Attach Geo-Tagged Photo 1 — Team Interaction / Requirement Gathering at Community Partner Site]
+[EVIDENCE PLACEHOLDER 2: Attach Geo-Tagged Photo 2 — Live Dashboard Demonstration & User Testing with Storage Operator / Stakeholder]
+[EVIDENCE PLACEHOLDER 3: Attach Screenshot 3 — Live Deployed Site URL & Field Test Feedback Log]
+Chapter 10: Conclusion & Future Scope
+10.1 Conclusion
+Post-harvest grain spoilage is a deeply consequential yet technically solvable community challenge affecting smallholder farmer incomes and national food security. Through this CS002 Community Service Project, our team engineered and validated the AI-Powered Grain Spoilage Prevention System for Storage Facilities, uniting high-throughput storage telemetry persistence (Apache Cassandra), live 48–72 hour meteorological forecasting (OpenWeatherMap API), historical climate relationship modeling (Neo4j Knowledge Graph), and dual machine learning risk classification (Random Forest & TensorFlow 2.x) inside an intuitive early-warning web dashboard. By shifting rural grain storage management from reactive visual checks to proactive, weather-aware spoilage prevention, the project delivers a practical, zero-licensing-cost technical foundation aligned with UN SDG 2 (Zero Hunger), UN SDG 12 (Responsible Consumption and Production), and UN SDG 13 (Climate Action).
+10.2 Future Scope
+Beyond this one-semester cycle, the platform can be scaled into a production rural deployment through five targeted engineering enhancements:1. Low-Cost Edge IoT Hardware Integration: Deploy battery-powered ESP32 / LoRaWAN sensor lances (DHT22/SHT31 temperature-humidity probes + capacitive grain moisture sensors + NDIR CO2 sensors for early respiration detection) directly inside grain stacks.2. Multilingual SMS & WhatsApp Alerting: Integrate vernacular Hindi and regional-language SMS/WhatsApp notifications so rural godown managers receive High-Risk alerts even without continuous smartphone internet access.3. Closed-Loop Automated Aeration Control: Connect risk-engine outputs to solar-powered relay switches that automatically activate exhaust and aeration fans only during psychrometrically safe external humidity windows.4. Multi-Season Model Retraining & Edge Inference: Export the TensorFlow 2.x classifier to TensorFlow Lite for offline edge inference during rural connectivity outages, with periodic retraining on multi-season ground-truth spoilage logs.5. Cooperative & Mandi-Level Federation: Scale the multi-tenant Cassandra and Neo4j architecture to monitor dozens of village FPO godowns under a unified district-level food security dashboard.
+REFERENCES
+1. Food and Agriculture Organization of the United Nations (FAO). (2019). The State of Food and Agriculture 2019: Moving Forward on Food Loss and Waste Reduction. Rome: FAO. Available at: FAO SOFA 2019 Interactive Report2. Food and Agriculture Organization of the United Nations (FAO). Food Loss and Food Waste Policy Support and Governance Gateway. Available at: FAO Food Loss and Food Waste3. Food and Agriculture Organization of the United Nations (FAO). SDG Indicator 12.3.1 — Global Food Loss Index Portal. Available at: FAO SDG 12.3.1 Data Portal4. Ministry of Food Processing Industries, Government of India. (2022, December 20). Post Harvest Food Loss — Comparative Findings of ICAR-CIPHET (2015) and NABCONS (2022) Studies. Press Information Bureau (PIB) Delhi, Release ID 1885038. Available at: PIB Release ID 18850385. Food and Agriculture Organization of the United Nations (FAO). Manual of the Prevention of Post-Harvest Grain Losses — Section 2.2.5: Safe Moisture Content and Pest/Mold Thresholds. Available at: FAO Post-Harvest Grain Loss Manual6. Food and Agriculture Organization of the United Nations (FAO). Chapter 9: Crop Handling, Conditioning and Storage — Grain Storage Guidelines. Available at: FAO Grain Storage Guidelines7. United Nations Department of Economic and Social Affairs (UN DESA). Sustainable Development Goal 2: Zero Hunger. Available at: UN SDG 28. United Nations Department of Economic and Social Affairs (UN DESA). Sustainable Development Goal 12: Ensure Sustainable Consumption and Production Patterns. Available at: UN SDG 129. United Nations Department of Economic and Social Affairs (UN DESA). Sustainable Development Goal 13: Take Urgent Action to Combat Climate Change and Its Impacts. Available at: UN SDG 1310. OPIsystems Inc. Grain Storage Monitoring and Management Products (OPI BLUE, EPIQ, OMNI Cable). Available at: OPIsystems Products11. Centaur Analytics Inc. Internet-of-Crops Grain Storage Monitoring Platform. Available at: Centaur Analytics Grain Solutions12. GrainSense Oy. Portable Near-Infrared (NIR) Grain Quality Analyzer. Available at: GrainSense Products13. MDPI Engineering Proceedings. (2025). Low-Cost IoT-Based Smart Grain Monitoring System for Sustainable Food Security. Available at: MDPI 2673-4591/118/1/9014. International Journal of Innovative Research in Technology (IJIRT). An IoT-Based Solution for Monitoring Grain Spoilage in Warehouses. Available at: IJIRT Paper 19285715. Venkatesan, N. et al. (2026). AI-Based Prediction and Optimization of Grain Storage Conditions for Quality Loss Minimization. ResearchGate. Available at: ResearchGate Publication 41435349416. Apache Software Foundation. Apache Cassandra Architecture Overview & Official Documentation. Available at: Apache Cassandra Documentation17. Neo4j Inc. Neo4j Graph Database & Cypher Official Documentation. Available at: Neo4j Documentation18. Google TensorFlow Team. TensorFlow 2.x Official API Documentation. Available at: TensorFlow API Docs19. Pedregosa et al. scikit-learn RandomForestClassifier Official Documentation. Available at: scikit-learn RandomForestClassifier20. OpenWeather Ltd. OpenWeatherMap Current & Forecast Weather API Documentation. Available at: OpenWeatherMap API

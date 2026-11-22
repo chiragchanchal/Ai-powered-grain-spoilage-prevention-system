@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-11-22T11:11:24.866706+00:00",
+  "n_training_samples": 4800,
+  "n_test_samples": 1200,
+  "overall_accuracy": 1.0,
+  "high_risk_recall": 1.0,
+  "macro_f1": 1.0,
+  "confusion_matrix": [
+    [
+      400,
+      0,
+      0
+    ],
+    [
+      0,
+      400,
+      0
+    ],
+    [
+      0,
+      0,
+      400
+    ]
+  ],
+  "feature_importances": {
+    "kg_prior": 0.2997,
+    "mc": 0.2622,
+    "rh": 0.2382,
+    "dt_dt": 0.0597,
+    "temp_c": 0.0381,
+    "max_temp_48h": 0.038,
+    "precip_prob_48h": 0.0363,
+    "max_rh_48h": 0.0155,
+    "drh_dt": 0.0122
+  },
+  "weights": {
+    "random_forest": 0.55,
+    "neural_network": 0.45
+  },
+  "target_met": true
+}
