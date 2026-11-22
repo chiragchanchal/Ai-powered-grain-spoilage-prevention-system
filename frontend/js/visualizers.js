@@ -1,7 +1,6 @@
 /**
- * AgroGuard Product Visualizers
- * Clean, tactile, authentic industrial visualization:
- * - Structural corrugated steel silo cross-section
+ * AgroGuard Product Visualizers (UI-UX Pro Max Specification)
+ * - Structural corrugated steel silo cross-section with real crop fill & probe lances
  * - High-legibility threshold meters with safety baselines
  * - Audio alarm synthesizer
  */
@@ -19,6 +18,9 @@ const Visualizers = {
     let grainColor = "#D97706"; // Amber Wheat
     if (grainType.toLowerCase().includes("paddy")) grainColor = "#B45309";
     if (grainType.toLowerCase().includes("maize")) grainColor = "#EA580C";
+    if (grainType.toLowerCase().includes("pulses")) grainColor = "#A16207";
+    if (grainType.toLowerCase().includes("mustard")) grainColor = "#CA8A04";
+    if (grainType.toLowerCase().includes("soybean")) grainColor = "#D97706";
 
     let probeColor = "#10B981"; // Safe probe
     if (riskTier === "HIGH") probeColor = "#EF4444";
@@ -78,7 +80,7 @@ const Visualizers = {
     const contextNote = isExceeded ? `${delta}${unit} over limit` : `${delta}${unit} safe buffer`;
 
     return `
-      <div class="flex flex-col justify-between p-2.5 rounded-lg bg-slate-900/60 border border-slate-800/80">
+      <div class="flex flex-col justify-between p-2.5 rounded-lg bg-[#0B111E] border border-[#1C283F]">
         <div class="flex items-center justify-between text-xs text-slate-400">
           <span>${label}</span>
           <span class="text-[10px] font-numeric text-slate-500">limit: ${safeThreshold}${unit}</span>

@@ -102,7 +102,13 @@ def trigger_scenario(req: ScenarioTriggerRequest):
     silo_id = req.target_silo_id or scene["silo_id"]
     silo = cassandra_connector.get_silo(silo_id, settings.FACILITY_ID)
     if not silo:
-        raise HTTPException(status_code=404, detail="Silo not found")
+        # Graceful fallback: If the default demo silo was deleted or modified, use first available silo
+        all_silos = cassandra_connector.get_silos(settings.FACILITY_ID)
+        if all_silos:
+            silo = all_silos[0]
+            silo_id = silo["silo_id"]
+        else:
+            raise HTTPException(status_code=404, detail="No storage silos found in facility")
 
     ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
 

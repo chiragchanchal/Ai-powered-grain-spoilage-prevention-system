@@ -86,23 +86,23 @@ class LocalTimeSeriesStore:
             conn.commit()
 
     def _ensure_sample_data(self):
-        """Seeds initial silos and recent telemetry history if empty."""
+        """Seeds initial silos and recent telemetry history if missing."""
         with self._get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM silos")
-            if cursor.fetchone()[0] == 0:
-                silos_seed = [
-                    ("FAC_GURUGRAM_01", "SILO_01", "North Silo 1 - Wheat Reserve", "wheat", 500.0, 420.0, "DHT22, CapMoisture, ThermalLance", "Haryana", 28.4595, 77.0266),
-                    ("FAC_GURUGRAM_01", "SILO_02", "East Silo 2 - Basmati Paddy", "paddy", 600.0, 510.0, "SHT31, CapMoisture, NDIR_CO2", "Haryana", 28.4595, 77.0266),
-                    ("FAC_GURUGRAM_01", "SILO_03", "South Silo 3 - Hybrid Maize", "maize", 400.0, 310.0, "DHT22, CapMoisture", "Haryana", 28.4595, 77.0266),
-                    ("FAC_GURUGRAM_01", "SILO_04", "West Silo 4 - Seed Stock Wheat", "wheat", 350.0, 280.0, "SHT31, CapMoisture, ThermalLance", "Haryana", 28.4595, 77.0266),
-                ]
-                cursor.executemany("""
-                INSERT INTO silos (facility_id, silo_id, name, grain_type, capacity_tonnes, current_fill_tonnes, installed_sensors, region, lat, lon)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, silos_seed)
+            silos_seed = [
+                ("FAC_GURUGRAM_01", "SILO_01", "North Silo 1 - Wheat Reserve", "wheat", 500.0, 420.0, "DHT22, CapMoisture, ThermalLance", "Haryana", 28.4595, 77.0266),
+                ("FAC_GURUGRAM_01", "SILO_02", "East Silo 2 - Basmati Paddy", "paddy", 600.0, 510.0, "SHT31, CapMoisture, NDIR_CO2", "Haryana", 28.4595, 77.0266),
+                ("FAC_GURUGRAM_01", "SILO_03", "South Silo 3 - Hybrid Maize", "maize", 400.0, 310.0, "DHT22, CapMoisture", "Haryana", 28.4595, 77.0266),
+                ("FAC_GURUGRAM_01", "SILO_04", "West Silo 4 - Seed Stock Wheat", "wheat", 350.0, 280.0, "SHT31, CapMoisture, ThermalLance", "Haryana", 28.4595, 77.0266),
+            ]
+            cursor.executemany("""
+            INSERT OR IGNORE INTO silos (facility_id, silo_id, name, grain_type, capacity_tonnes, current_fill_tonnes, installed_sensors, region, lat, lon)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, silos_seed)
 
-                # Seed historical rolling telemetry for each silo (past 24 hours in 1-hour increments)
+            # Seed historical rolling telemetry if empty
+            cursor.execute("SELECT COUNT(*) FROM silo_telemetry")
+            if cursor.fetchone()[0] == 0:
                 now = datetime.datetime.now(datetime.timezone.utc)
                 telemetry_records = []
 
