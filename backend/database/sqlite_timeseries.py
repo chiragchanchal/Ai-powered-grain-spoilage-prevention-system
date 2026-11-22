@@ -10,7 +10,10 @@ import sqlite3
 import datetime
 from typing import List, Dict, Any, Optional
 
-DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data")
+if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+    DB_DIR = os.getenv("DATA_DIR", "/tmp/data")
+else:
+    DB_DIR = os.getenv("DATA_DIR", os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data"))
 DB_PATH = os.path.join(DB_DIR, "grain_guard_timeseries.db")
 
 
